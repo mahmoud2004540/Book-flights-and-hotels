@@ -1,0 +1,39 @@
+# التبعيات
+node_modules/
+.pnp
+.pnp.js
+
+# مخرجات البناء
+.next/
+out/
+build/
+dist/
+
+# البيئة — ممنوع رفع أي مفاتيح
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# أدوات ونظام
+.DS_Store
+*.pem
+.vercel
+.turbo
+*.tsbuildinfo
+next-env.d.ts
+
+# سجلات
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# اختبارات
+coverage/
+test-results/
+playwright-report/

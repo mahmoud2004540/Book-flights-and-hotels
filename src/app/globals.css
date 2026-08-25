@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+/*
+ * نظام التصميم — القسم 10.
+ * الهوية مبنية على عالم الطيران الليلي: أرضية زرقاء داكنة، ولون رئيسي كهرماني
+ * مأخوذ من لوحات المغادرة القديمة (split-flap)، ولون ثانوي فيروزي من إضاءة
+ * حواف المدرج. الرماديات كلها مائلة للأزرق — رمادي محايد تمامًا يبدو غير مقصود.
+ *
+ * الثيم له ثلاث حالات لا اثنتان: اختيار صريح يضع data-theme، والوضع الافتراضي
+ * لا يضع شيئًا ويترك prefers-color-scheme هو الفاصل. لذلك كل لون يُعرَّف في
+ * :root أولًا، ثم يُعاد تعريفه في الحالتين — وأي لون يُعرَّف داخل كتلة الوضع
+ * الداكن فقط لن يظهر إطلاقًا في الحالة غير الموسومة.
+ */
+
+:root {
+  --ground: #f2f5f8;
+  --surface: #ffffff;
+  --surface-2: #e8edf3;
+  --surface-3: #dde4ed;
+  --line: #cfd8e3;
+  --line-soft: #e1e8f0;
+
+  --fg: #111823;
+  --fg-muted: #54637a;
+  --fg-faint: #7a8798;
+
+  --brand: #a85d06;
+  --brand-hover: #8c4d04;
+  --brand-soft: #f5e4cc;
+  --brand-fg: #ffffff;
+
+  --accent: #0b6058;
+  --accent-soft: #d9eae6;
+
+  --ok: #2a6e45;
+  --warn: #9a4b0b;
+  --crit: #98262a;
+  --crit-soft: #f7e0e0;
+
+  --ring: #a85d06;
+  --shadow-sm: 0 1px 2px rgb(17 24 35 / 0.06);
+  --shadow-md: 0 1px 2px rgb(17 24 35 / 0.06), 0 8px 24px -16px rgb(17 24 35 / 0.25);
+  --shadow-lg: 0 2px 4px rgb(17 24 35 / 0.05), 0 16px 48px -24px rgb(17 24 35 / 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0c1017;
+    --surface: #141a24;
+    --surface-2: #1d2530;
+    --surface-3: #26303d;
+    --line: #2c3745;
+    --line-soft: #222b38;
+
+    --fg: #e6ebf2;
+    --fg-muted: #9daabc;
+    --fg-faint: #75839a;
+
+    --brand: #eba455;
+    --brand-hover: #f2b673;
+    --brand-soft: #3a2a14;
+    --brand-fg: #1a1206;
+
+    --accent: #5cbbae;
+    --accent-soft: #12302d;
+
+    --ok: #63b98a;
+    --warn: #d98a4a;
+    --crit: #e58184;
+    --crit-soft: #38191b;
+
+    --ring: #eba455;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -18px rgb(0 0 0 / 0.9);
+    --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.5), 0 20px 56px -28px rgb(0 0 0 / 1);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground: #0c1017;
+  --surface: #141a24;
+  --surface-2: #1d2530;
+  --surface-3: #26303d;
+  --line: #2c3745;
+  --line-soft: #222b38;
+
+  --fg: #e6ebf2;
+  --fg-muted: #9daabc;
+  --fg-faint: #75839a;
+
+  --brand: #eba455;
+  --brand-hover: #f2b673;
+  --brand-soft: #3a2a14;
+  --brand-fg: #1a1206;
+
+  --accent: #5cbbae;
+  --accent-soft: #12302d;
+
+  --ok: #63b98a;
+  --warn: #d98a4a;
+  --crit: #e58184;
+  --crit-soft: #38191b;
+
+  --ring: #eba455;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -18px rgb(0 0 0 / 0.9);
+  --shadow-lg: 0 2px 6px rgb(0 0 0 / 0.5), 0 20px 56px -28px rgb(0 0 0 / 1);
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-fg: var(--brand-fg);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+
+  --font-sans: var(--font-plex-arabic), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  --radius-card: 0.5rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--ground);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* حالة تركيز مرئية دائمًا — a11y، القسم 10 */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* الأرقام تصطف في أعمدة الأسعار والمواعيد */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * التتبّع الحرفي (letter-spacing) يقطع اتصال الحروف العربية ويجعل الكلمة
+   * تُقرأ كحروف متفرقة. لذلك يُطبَّق على اللاتينية وحدها.
+   */
+  .label-caps {
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  html[lang="en"] .label-caps {
+    letter-spacing: 0.1em;
+  }
+
+  /*
+   * الخط أحادي المسافة لا يحتوي حروفًا عربية، والرجوع لخط بديل بمقاسات
+   * ثابتة يكسر اتصال الحروف. لذلك يقتصر استعماله على البيانات اللاتينية:
+   * أكواد IATA، مراجع الحجز، الأرقام.
+   */
+
+  /* الأكواد والمعرّفات لاتينية دائمًا حتى داخل نص عربي */
+  .ltr-data {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

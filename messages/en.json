@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "title": "Rehlaty — Best flight and hotel prices",
+    "description": "Compare flight and hotel prices from global suppliers, and book it yourself in a few steps."
+  },
+  "nav": {
+    "flights": "Flights",
+    "hotels": "Hotels",
+    "myBookings": "My bookings",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "theme": {
+    "toggle": "Switch theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "locale": {
+    "switch": "Change language",
+    "ar": "العربية",
+    "en": "English"
+  },
+  "home": {
+    "eyebrow": "Searching global suppliers",
+    "title": "The best price for your trip, without checking ten sites",
+    "subtitle": "We compare flight and hotel prices across several global suppliers in a single search, and show the final price including taxes — no surprises at the last step.",
+    "searchTabs": {
+      "flights": "Flights",
+      "hotels": "Hotels"
+    },
+    "trust": {
+      "priceTitle": "The final price, from the first screen",
+      "priceBody": "Every price shown includes taxes and fees. Before payment we re-confirm it with the supplier and tell you if it moved.",
+      "suppliersTitle": "Several suppliers, one search",
+      "suppliersBody": "We query every available supplier at once. If one goes down, results still arrive from the rest.",
+      "selfServeTitle": "Book it entirely yourself",
+      "selfServeBody": "Create an account, save traveller details, and manage your bookings — change, cancel and track from your dashboard."
+    }
+  },
+  "search": {
+    "from": "From",
+    "to": "To",
+    "fromPlaceholder": "City or airport",
+    "toPlaceholder": "City or airport",
+    "destination": "Destination",
+    "destinationPlaceholder": "City or hotel",
+    "departDate": "Departure",
+    "returnDate": "Return",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "passengers": "Passengers",
+    "guests": "Guests",
+    "cabinClass": "Cabin class",
+    "swap": "Swap origin and destination",
+    "submit": "Search",
+    "tripType": {
+      "oneWay": "One way",
+      "roundTrip": "Round trip",
+      "multiCity": "Multi-city"
+    },
+    "cabin": {
+      "economy": "Economy",
+      "premiumEconomy": "Premium economy",
+      "business": "Business",
+      "first": "First"
+    }
+  },
+  "status": {
+    "comingSoon": "In progress",
+    "stageNotice": "Live search is wired up in the next stage. The interface, design system and localisation are in place now."
+  },
+  "footer": {
+    "tagline": "Flight and hotel search and booking.",
+    "product": "Product",
+    "company": "Company",
+    "legal": "Legal",
+    "about": "About us",
+    "contact": "Contact",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy policy",
+    "cookies": "Cookie policy",
+    "refunds": "Cancellation and refund policy",
+    "rights": "All rights reserved."
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "body": "The link may have changed, or a character is missing. Head back to the homepage and start your search there.",
+    "home": "Back to homepage"
+  },
+  "policy": {
+    "pending": "Being drafted",
+    "body": "The final text for this page is under legal review and lands before launch. If you need details now, get in touch and we will answer directly."
+  }
+}
