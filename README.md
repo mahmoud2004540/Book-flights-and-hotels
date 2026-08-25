@@ -47,19 +47,60 @@ cp .env.example .env
 
 | المتغيّر | من أين تجيبه |
 |---|---|
-| `DATABASE_URL` | رابط الاتصال المجمّع (pooled) من لوحة Neon |
+| `DATABASE_URL` | رابط الاتصال المجمّع (pooled) من لوحة Neon — انظر الخطوات تحت |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` محليًا |
 | `DEFAULT_MARKUP_PERCENT` | رقم بين 0 و 100 — الافتراضي `4.5` |
 
 باقي المتغيّرات تُملأ في مرحلتها؛ تركها فارغة الآن لا يمنع التشغيل.
 
+<details>
+<summary>كيف تجيب <code>DATABASE_URL</code> من Neon</summary>
+
+1. أنشئ حسابًا على [neon.tech](https://neon.tech) — الخطة المجانية تكفي للتطوير.
+2. أنشئ مشروعًا واختر أقرب منطقة لمستخدميك (`eu-central-1` مناسبة لمصر والخليج).
+3. من صفحة المشروع افتح **Connection Details**.
+4. اختر **Pooled connection** لا Direct — الاتصال المجمّع هو الصحيح مع
+   الدوال بلا خادم (serverless)، والمباشر ينفد سقف اتصالاته بسرعة.
+5. انسخ الرابط كاملًا وضعه بين علامتَي اقتباس في `.env`. يجب أن ينتهي
+   بـ `?sslmode=require`.
+
+</details>
+
 ### 4. تهيئة قاعدة البيانات
 
 ```bash
-npm run db:generate   # توليد عميل Prisma
-npm run db:migrate    # إنشاء الجداول
-npm run db:seed       # بذر المزوّدين وقواعد الهامش
+npm run db:generate           # توليد عميل Prisma
+npx prisma migrate deploy     # تطبيق الترحيلات الموجودة
+npm run db:seed               # بذر المزوّدين وقواعد الهامش
 ```
+
+`migrate deploy` يطبّق ملف الترحيل الجاهز في `prisma/migrations/` كما هو —
+وهو الأمر الصحيح لأي بيئة غير بيئتك المحلية. استخدم `npm run db:migrate`
+فقط حين تُعدّل `schema.prisma` وتحتاج توليد ترحيل جديد.
+
+للتحقق من النجاح:
+
+```bash
+npm run db:studio    # تصفّح الجداول في المتصفح
+```
+
+يجب أن ترى 21 جدولًا، وأربعة مزوّدين في `suppliers`، وقاعدتَي هامش.
+
+<details>
+<summary>بديل: PostgreSQL محلي بدل Neon</summary>
+
+```bash
+docker run --name rehlaty-db -e POSTGRES_PASSWORD=dev \
+  -e POSTGRES_DB=rehlaty -p 5432:5432 -d postgres:16
+```
+
+ثم في `.env`:
+
+```
+DATABASE_URL="postgresql://postgres:dev@localhost:5432/rehlaty?schema=public"
+```
+
+</details>
 
 ### 5. التشغيل
 
