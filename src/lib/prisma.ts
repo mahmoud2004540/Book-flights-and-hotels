@@ -2,11 +2,12 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 /**
- * عميل Prisma واحد لكل عملية.
- * بدون هذا، إعادة التحميل السريع في التطوير تفتح اتصالًا جديدًا كل مرة
- * حتى ينفد سقف الاتصالات على Neon.
+ * One Prisma client per process.
+ * Without this, fast refresh in development opens a new connection on every
+ * reload until Neon's connection limit is exhausted.
  *
- * Prisma 7 يمرّر رابط الاتصال عبر محوّل السائق لا عبر schema.prisma.
+ * Prisma 7 passes the connection string through a driver adapter rather than
+ * through schema.prisma.
  */
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -15,7 +16,7 @@ const globalForPrisma = globalThis as unknown as {
 function createClient(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error("DATABASE_URL غير معرّف — راجع ملف .env.example.");
+    throw new Error("DATABASE_URL is not set — see .env.example.");
   }
 
   return new PrismaClient({

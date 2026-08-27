@@ -3,8 +3,8 @@ import { Link } from "@/i18n/navigation";
 import { BRAND } from "@/lib/config";
 
 /**
- * الصفحات القانونية المطلوبة في القسم 14. الروابط موجودة من الآن
- * حتى لا تُنسى، ومحتواها يُكتب في المرحلة 8 قبل الإطلاق.
+ * The legal pages required by section 14. The links exist from the start so
+ * they are not forgotten; their content is written in stage 8 before launch.
  */
 const LEGAL_LINKS = [
   { key: "terms", href: "/terms" },
@@ -18,16 +18,15 @@ const COMPANY_LINKS = [
   { key: "contact", href: "/contact" },
 ] as const;
 
-export function SiteFooter({ localeIsAr }: { localeIsAr: boolean }) {
+export function SiteFooter() {
   const t = useTranslations("footer");
   const year = new Date().getFullYear();
-  const brandName = localeIsAr ? BRAND.nameAr : BRAND.nameEn;
 
   return (
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-3 sm:px-6">
         <div>
-          <p className="font-semibold">{brandName}</p>
+          <p className="font-semibold">{BRAND.name}</p>
           <p className="mt-1 max-w-xs text-sm text-fg-muted">{t("tagline")}</p>
         </div>
 
@@ -64,7 +63,7 @@ export function SiteFooter({ localeIsAr }: { localeIsAr: boolean }) {
 
       <div className="border-t border-line-soft">
         <p className="mx-auto max-w-6xl px-4 py-5 text-xs text-fg-faint sm:px-6">
-          © <span className="tabular">{year}</span> {brandName}. {t("rights")}
+          © <span className="tabular">{year}</span> {BRAND.name}. {t("rights")}
         </p>
       </div>
     </footer>

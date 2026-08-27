@@ -3,18 +3,17 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { IBM_Plex_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { routing } from "@/i18n/routing";
-import { LOCALE_DIRECTION, type AppLocale } from "@/lib/config";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ThemeScript } from "@/components/layout/theme-script";
 import "../globals.css";
 
-const plexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic", "latin"],
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-plex-arabic",
+  variable: "--font-plex-sans",
   display: "swap",
 });
 
@@ -53,17 +52,14 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
 
-  // مطلوب للتصيير الثابت — بدونه تصبح كل صفحة ديناميكية.
+  // Required for static rendering — without it every page becomes dynamic.
   setRequestLocale(locale);
-
-  const typedLocale = locale as AppLocale;
-  const isAr = typedLocale === "ar";
 
   return (
     <html
-      lang={typedLocale}
-      dir={LOCALE_DIRECTION[typedLocale]}
-      className={`${plexArabic.variable} ${plexMono.variable}`}
+      lang={locale}
+      dir="ltr"
+      className={`${plexSans.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -71,9 +67,9 @@ export default async function LocaleLayout({
       </head>
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider>
-          <SiteHeader localeIsAr={isAr} />
+          <SiteHeader />
           <main className="flex-1">{children}</main>
-          <SiteFooter localeIsAr={isAr} />
+          <SiteFooter />
         </NextIntlClientProvider>
       </body>
     </html>

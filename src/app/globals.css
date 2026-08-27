@@ -1,15 +1,17 @@
 @import "tailwindcss";
 
 /*
- * نظام التصميم — القسم 10.
- * الهوية مبنية على عالم الطيران الليلي: أرضية زرقاء داكنة، ولون رئيسي كهرماني
- * مأخوذ من لوحات المغادرة القديمة (split-flap)، ولون ثانوي فيروزي من إضاءة
- * حواف المدرج. الرماديات كلها مائلة للأزرق — رمادي محايد تمامًا يبدو غير مقصود.
+ * Design system — section 10.
+ * The identity comes from night aviation: a deep blue ground, an amber
+ * primary borrowed from old split-flap departure boards, and a teal secondary
+ * from runway edge lighting. Every grey is biased toward blue — a perfectly
+ * neutral grey reads as unconsidered.
  *
- * الثيم له ثلاث حالات لا اثنتان: اختيار صريح يضع data-theme، والوضع الافتراضي
- * لا يضع شيئًا ويترك prefers-color-scheme هو الفاصل. لذلك كل لون يُعرَّف في
- * :root أولًا، ثم يُعاد تعريفه في الحالتين — وأي لون يُعرَّف داخل كتلة الوضع
- * الداكن فقط لن يظهر إطلاقًا في الحالة غير الموسومة.
+ * The theme has three states, not two: an explicit choice stamps data-theme,
+ * while the default stamps nothing and lets prefers-color-scheme decide. So
+ * every colour is defined on :root first and redefined for both states — a
+ * colour defined only inside the dark block never appears in the unstamped
+ * state, which is the classic unreadable-page bug.
  */
 
 :root {
@@ -132,7 +134,7 @@
   --color-crit: var(--crit);
   --color-crit-soft: var(--crit-soft);
 
-  --font-sans: var(--font-plex-arabic), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-plex-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --shadow-sm: var(--shadow-sm);
@@ -159,41 +161,22 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* حالة تركيز مرئية دائمًا — a11y، القسم 10 */
+  /* A focus state that is always visible — a11y, section 10 */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
     border-radius: 2px;
   }
 
-  /* الأرقام تصطف في أعمدة الأسعار والمواعيد */
+  /* Digits line up in price and schedule columns */
   .tabular {
     font-variant-numeric: tabular-nums;
   }
 
-  /*
-   * التتبّع الحرفي (letter-spacing) يقطع اتصال الحروف العربية ويجعل الكلمة
-   * تُقرأ كحروف متفرقة. لذلك يُطبَّق على اللاتينية وحدها.
-   */
+  /* Small uppercase labels: eyebrows, column headings, section markers */
   .label-caps {
-    letter-spacing: 0;
     text-transform: uppercase;
-  }
-
-  html[lang="en"] .label-caps {
     letter-spacing: 0.1em;
-  }
-
-  /*
-   * الخط أحادي المسافة لا يحتوي حروفًا عربية، والرجوع لخط بديل بمقاسات
-   * ثابتة يكسر اتصال الحروف. لذلك يقتصر استعماله على البيانات اللاتينية:
-   * أكواد IATA، مراجع الحجز، الأرقام.
-   */
-
-  /* الأكواد والمعرّفات لاتينية دائمًا حتى داخل نص عربي */
-  .ltr-data {
-    direction: ltr;
-    unicode-bidi: isolate;
   }
 
   @media (prefers-reduced-motion: reduce) {

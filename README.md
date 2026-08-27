@@ -1,100 +1,108 @@
-# رِحلتي — منصة بحث وحجز طيران وفنادق
+# Rehlaty — flight and hotel search and booking
 
-بحث ومقارنة أسعار الطيران والفنادق من عدة مزوّدين عالميين في طلب واحد، مع تسجيل
-ذاتي للمستخدمين وحجز كامل من غير وسيط بشري.
+Search and compare flight and hotel prices across several global suppliers in
+one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **الحالة:** المرحلة 0 مكتملة من [خارطة الطريق](docs/ARCHITECTURE.md#11-خارطة-الطريق).
-> البنية والتصميم والتوطين جاهزون؛ البحث الحقيقي يبدأ في المرحلة 2.
-
----
-
-## ما الذي يعمل الآن
-
-- مشروع Next.js 16 بـ App Router و TypeScript صارم (`strict` + `noUncheckedIndexedAccess`).
-- توطين كامل عربي/إنجليزي عبر `next-intl` مع RTL حقيقي — لا نص ثابت داخل المكوّنات.
-- نظام تصميم بـ design tokens، ووضع داكن بثلاث حالات (فاتح/داكن/حسب النظام).
-- مخطط قاعدة بيانات كامل بـ Prisma مع كل الفهارس المطلوبة.
-- ملف بذر للمزوّدين وقواعد الهامش وأكواد الخصم.
-- التحقق من متغيّرات البيئة عند الإقلاع — إعداد ناقص يفشل فورًا وبرسالة واضحة.
-
-## ما الذي لم يُبنَ بعد
-
-تسجيل الدخول، تكامل المزوّدين، صفحات النتائج، رحلة الحجز، والدفع. كل واحد منها
-مرحلة مستقلة في خارطة الطريق.
+> **Status:** stage 0 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> The foundation and design system are in place; live search starts at stage 2.
 
 ---
 
-## التشغيل المحلي خطوة بخطوة
+## What works today
 
-### 1. المتطلبات
+- Next.js 16 on the App Router with strict TypeScript (`strict` plus `noUncheckedIndexedAccess`).
+- A design system built on tokens, with a three-state theme (light / dark / follow the OS).
+- A complete Prisma schema with every index the brief requires.
+- A seed for suppliers, markup rules and discount codes.
+- Environment validation at boot — an incomplete configuration fails immediately with a readable message.
+- Copy lives in `messages/`, never inline in components, so adding a second language later is configuration rather than a rewrite.
 
-- Node.js 20 أو أحدث
-- قاعدة PostgreSQL — [Neon](https://neon.tech) مجانية وتكفي للتطوير
+## What is not built yet
 
-### 2. تنصيب التبعيات
+Sign-in, supplier integration, results pages, the booking flow, and payments.
+Each is its own stage in the roadmap.
+
+---
+
+## Running it locally
+
+### 1. Requirements
+
+- Node.js 20 or newer
+- A PostgreSQL database — [Neon](https://neon.tech) is free and enough for development
+
+### 2. Install
 
 ```bash
 npm install
 ```
 
-### 3. إعداد البيئة
+### 3. Configure
 
 ```bash
 cp .env.example .env
 ```
 
-ثم افتح `.env` واملأ المتغيّرات المعلَّمة بـ `[الآن]`:
+Then open `.env` and fill in the variables marked `[now]`:
 
-| المتغيّر | من أين تجيبه |
+| Variable | Where it comes from |
 |---|---|
-| `DATABASE_URL` | رابط الاتصال المجمّع (pooled) من لوحة Neon — انظر الخطوات تحت |
-| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` محليًا |
-| `DEFAULT_MARKUP_PERCENT` | رقم بين 0 و 100 — الافتراضي `4.5` |
+| `DATABASE_URL` | The **pooled** connection string from the Neon dashboard — see below |
+| `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally |
+| `DEFAULT_MARKUP_PERCENT` | A number between 0 and 100 — defaults to `4.5` |
 
-باقي المتغيّرات تُملأ في مرحلتها؛ تركها فارغة الآن لا يمنع التشغيل.
+Everything else is filled in when its stage arrives; leaving them empty does
+not stop the app from running.
 
 <details>
-<summary>كيف تجيب <code>DATABASE_URL</code> من Neon</summary>
+<summary>Getting <code>DATABASE_URL</code> from Neon</summary>
 
-1. أنشئ حسابًا على [neon.tech](https://neon.tech) — الخطة المجانية تكفي للتطوير.
-2. أنشئ مشروعًا واختر أقرب منطقة لمستخدميك (`eu-central-1` مناسبة لمصر والخليج).
-3. من صفحة المشروع افتح **Connection Details**.
-4. اختر **Pooled connection** لا Direct — الاتصال المجمّع هو الصحيح مع
-   الدوال بلا خادم (serverless)، والمباشر ينفد سقف اتصالاته بسرعة.
-5. انسخ الرابط كاملًا وضعه بين علامتَي اقتباس في `.env`. يجب أن ينتهي
-   بـ `?sslmode=require`.
+1. Create an account at [neon.tech](https://neon.tech) — the free plan is enough.
+2. Create a project and pick the region closest to your users.
+3. Open **Connection Details** on the project page.
+4. Choose **Pooled connection**, not Direct. The pooled string is the correct
+   one for serverless hosting; a direct connection exhausts its limit quickly.
+5. Copy the whole string into `.env`, in quotes. It should end with
+   `?sslmode=require`, and the host should contain `pooler`.
+
+**Already using Neon for another project?** Share the account, but not the
+database. This schema creates tables named `users`, `accounts`, `sessions`,
+`payments` and `notifications` — names another project very likely already
+uses, which would fail the migration. Instead create a new database inside the
+same project (**Databases → New Database**) and use its connection string.
 
 </details>
 
-### 4. تهيئة قاعدة البيانات
+### 4. Set up the database
 
 ```bash
-npm run db:generate           # توليد عميل Prisma
-npx prisma migrate deploy     # تطبيق الترحيلات الموجودة
-npm run db:seed               # بذر المزوّدين وقواعد الهامش
+npm run db:generate           # generate the Prisma client
+npx prisma migrate deploy     # apply the existing migrations
+npm run db:seed               # seed suppliers and markup rules
 ```
 
-`migrate deploy` يطبّق ملف الترحيل الجاهز في `prisma/migrations/` كما هو —
-وهو الأمر الصحيح لأي بيئة غير بيئتك المحلية. استخدم `npm run db:migrate`
-فقط حين تُعدّل `schema.prisma` وتحتاج توليد ترحيل جديد.
+`migrate deploy` applies the migration in `prisma/migrations/` as written, and
+is the right command for any environment other than your own machine. Use
+`npm run db:migrate` only when you change `schema.prisma` and need to generate
+a new migration.
 
-للتحقق من النجاح:
+To confirm it worked:
 
 ```bash
-npm run db:studio    # تصفّح الجداول في المتصفح
+npm run db:studio
 ```
 
-يجب أن ترى 21 جدولًا، وأربعة مزوّدين في `suppliers`، وقاعدتَي هامش.
+You should see 21 tables, four rows in `suppliers`, and two markup rules.
 
 <details>
-<summary>بديل: PostgreSQL محلي بدل Neon</summary>
+<summary>Alternative: local PostgreSQL instead of Neon</summary>
 
 ```bash
 docker run --name rehlaty-db -e POSTGRES_PASSWORD=dev \
   -e POSTGRES_DB=rehlaty -p 5432:5432 -d postgres:16
 ```
 
-ثم في `.env`:
+Then in `.env`:
 
 ```
 DATABASE_URL="postgresql://postgres:dev@localhost:5432/rehlaty?schema=public"
@@ -102,69 +110,70 @@ DATABASE_URL="postgresql://postgres:dev@localhost:5432/rehlaty?schema=public"
 
 </details>
 
-### 5. التشغيل
+### 5. Run
 
 ```bash
 npm run dev
 ```
 
-افتح <http://localhost:3000> — سيحوّلك تلقائيًا إلى `/ar`.
+Open <http://localhost:3000>.
 
 ---
 
-## الأوامر
+## Commands
 
-| الأمر | الوظيفة |
+| Command | What it does |
 |---|---|
-| `npm run dev` | خادم التطوير |
-| `npm run build` | بناء الإنتاج |
-| `npm run start` | تشغيل نسخة الإنتاج بعد البناء |
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
-| `npm run typecheck` | فحص الأنواع بدون توليد ملفات |
-| `npm run db:migrate` | ترحيل قاعدة البيانات في التطوير |
-| `npm run db:deploy` | تطبيق الترحيلات في الإنتاج |
-| `npm run db:studio` | واجهة Prisma Studio لتصفّح البيانات |
-| `npm run db:seed` | بذر بيانات التشغيل |
+| `npm run typecheck` | Type check without emitting |
+| `npm run db:migrate` | Create and apply a migration in development |
+| `npm run db:deploy` | Apply existing migrations — use this everywhere else |
+| `npm run db:studio` | Browse the data in Prisma Studio |
+| `npm run db:seed` | Seed operational data |
 
 ---
 
-## بنية المشروع
+## Project layout
 
 ```
 src/
-├─ app/[locale]/     صفحات موجّهة باللغة
-├─ components/       ui/ (عناصر أساسية) · layout/ · home/
-├─ i18n/             إعداد التوطين والتنقّل
-├─ lib/              الإعدادات · التحقق من البيئة · التنسيق · Prisma
-└─ middleware.ts     توجيه اللغة
+├─ app/[locale]/     Pages
+├─ components/       ui/ (primitives) · layout/ · home/
+├─ i18n/             Routing and navigation configuration
+├─ lib/              Config · env validation · formatting · Prisma
+└─ proxy.ts          Locale resolution
 
-messages/            ar.json · en.json
-prisma/              schema.prisma · seed.ts
-docs/                ARCHITECTURE.md — الخطة المعمارية الكاملة
+messages/            en.json — all user-facing copy
+prisma/              schema.prisma · migrations/ · seed.ts · seed.sql
+docs/                ARCHITECTURE.md — the full architecture plan
 ```
 
-**أين تغيّر ماذا:** اسم المشروع والعملات والمهل وحدود الطلبات كلها في
-`src/lib/config.ts` وحده. النصوص كلها في `messages/`. الألوان والخطوط في
-`src/app/globals.css`.
+**Where to change what:** the project name, currencies, timeouts and rate
+limits all live in `src/lib/config.ts` alone. All copy is in `messages/`.
+Colours and fonts are in `src/app/globals.css`.
 
 ---
 
-## قواعد المساهمة
+## Contributing rules
 
-مأخوذة من القسم 15 من البريف وملزمة:
+Taken from section 15 of the brief, and binding:
 
-- TypeScript صارم — ممنوع `any`.
-- ملفات تحت 300 سطر؛ ما يكبر يُقسَّم إلى وحدات.
-- ممنوع `try/catch` فارغ — كل تعامل مع طرف خارجي يرجع نتيجة صريحة.
-- ممنوع أي بيانات وهمية في مسار الإنتاج؛ المحوّل الوهمي معزول ومحجوب.
-- ممنوع أي مفتاح داخل الكود — كله من متغيّرات البيئة.
-- ممنوع أي نص ثابت داخل المكوّنات — كله في ملفات الترجمة.
+- Strict TypeScript — no `any`.
+- Files under 300 lines; anything larger gets split into modules.
+- No empty `try/catch` — every third-party call returns an explicit result.
+- No fake data on the production path; the mock adapter is isolated and blocked.
+- No secrets in code — everything comes from environment variables.
+- No hardcoded strings in components — all copy lives in `messages/`.
 
 ---
 
-## ملاحظة تجارية مهمة
+## An important commercial note
 
-إصدار تذاكر صالحة للسفر عبر Amadeus Production يتطلب كيانًا تجاريًا مسجّلًا
-واتفاقية تجارية و IATA أو TIDS. بيئة `test.api.amadeus.com` ترجع بيانات وأسعارًا
-واقعية لكنها **لا تصدر تذاكر حقيقية**. التفاصيل في
-[الخطة المعمارية](docs/ARCHITECTURE.md#2-حدّ-الترخيص-التجاري--قيد-تجاري-لا-تقني).
+Issuing real, flyable tickets through Amadeus Production requires a registered
+business entity, a commercial agreement, and IATA or TIDS accreditation. The
+`test.api.amadeus.com` environment returns realistic data and prices but
+**does not issue real tickets**. Details in the
+[architecture plan](docs/ARCHITECTURE.md#2-the-licensing-boundary).

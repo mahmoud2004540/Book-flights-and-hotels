@@ -1,15 +1,15 @@
-# التبعيات
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
 
-# مخرجات البناء
+# Build output
 .next/
 out/
 build/
 dist/
 
-# البيئة — ممنوع رفع أي مفاتيح
+# Environment — never commit secrets
 .env
 .env.local
 .env.*.local
@@ -19,7 +19,7 @@ dist/
 prisma/*.db
 prisma/*.db-journal
 
-# أدوات ونظام
+# Tooling and OS
 .DS_Store
 *.pem
 .vercel
@@ -27,13 +27,13 @@ prisma/*.db-journal
 *.tsbuildinfo
 next-env.d.ts
 
-# سجلات
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# اختبارات
+# Tests
 coverage/
 test-results/
 playwright-report/

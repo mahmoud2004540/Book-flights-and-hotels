@@ -6,7 +6,7 @@ const eslintConfig = [
   ...nextTypescript,
   {
     rules: {
-      // القسم 15: TypeScript صارم — ممنوع any
+      // Section 15: strict TypeScript — no `any`
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",

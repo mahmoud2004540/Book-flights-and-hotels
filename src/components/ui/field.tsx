@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** حقل بعنوان مرتبط — الربط عبر htmlFor مطلوب لقارئ الشاشة، القسم 10. */
+/** A labelled field. The htmlFor link is required for screen readers — section 10. */
 export function Field({
   label,
   htmlFor,

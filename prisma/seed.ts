@@ -3,13 +3,13 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { AmountType, PrismaClient, ServiceType } from "@prisma/client";
 
 /**
- * بذرة بيانات التشغيل: المزوّدون وقواعد الهامش وأكواد الخصم.
- * هذه إعدادات حقيقية لا بيانات وهمية — المستخدمون والحجوزات التجريبية
- * تُضاف في المرحلة 1 بعد اكتمال المصادقة.
+ * Seeds operational data: suppliers, markup rules and discount codes.
+ * These are real settings, not fake data — demo users and bookings arrive in
+ * stage 1, once authentication exists.
  */
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error("DATABASE_URL غير معرّف — راجع ملف .env.example.");
+  throw new Error("DATABASE_URL is not set — see .env.example.");
 }
 
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
@@ -23,7 +23,7 @@ const SUPPLIERS = [
 
 async function main(): Promise<void> {
   if (process.env.NODE_ENV === "production") {
-    throw new Error("البذر ممنوع في الإنتاج.");
+    throw new Error("Seeding is not allowed in production.");
   }
 
   for (const s of SUPPLIERS) {
@@ -36,7 +36,7 @@ async function main(): Promise<void> {
 
   const defaultMarkup = Number(process.env.DEFAULT_MARKUP_PERCENT ?? 4.5);
 
-  // قاعدة عامة بأولوية منخفضة، تغلبها أي قاعدة أكثر تحديدًا.
+  // A catch-all rule at low priority, beaten by anything more specific.
   await prisma.markupRule.upsert({
     where: { id: "default-markup" },
     update: { value: defaultMarkup },
@@ -49,7 +49,8 @@ async function main(): Promise<void> {
     },
   });
 
-  // مثال لقاعدة أكثر تحديدًا: هامش أقل على الفنادق لأن عمولتها أعلى أصلًا.
+  // An example of a more specific rule: a lower margin on hotels, where the
+  // supplier commission is already higher.
   await prisma.markupRule.upsert({
     where: { id: "hotels-markup" },
     update: {},
@@ -78,12 +79,12 @@ async function main(): Promise<void> {
     },
   });
 
-  console.log("تم البذر: 4 مزوّدين، قاعدتا هامش، كود خصم واحد.");
+  console.log("Seeded: 4 suppliers, 2 markup rules, 1 discount code.");
 }
 
 main()
   .catch((error: unknown) => {
-    console.error("فشل البذر:", error);
+    console.error("Seeding failed:", error);
     process.exitCode = 1;
   })
   .finally(() => {

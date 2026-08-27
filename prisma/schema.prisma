@@ -1,6 +1,7 @@
-// مخطط قاعدة البيانات — القسم 6 من البريف.
-// كل المبالغ Decimal(12,2): حساب الأموال بأرقام عائمة يولّد فروق قروش تتراكم.
-// كل حقل ينتهي بـ Enc مشفّر AES-256-GCM قبل الكتابة (القسم 8).
+// Database schema — section 6 of the brief.
+// All money is Decimal(12,2): computing money in floating point produces
+// sub-cent drift that accumulates.
+// Every field ending in Enc is AES-256-GCM encrypted before write (section 8).
 
 generator client {
   provider = "prisma-client-js"
@@ -10,7 +11,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ---------------------------------------------------------------- التعدادات
+// ------------------------------------------------------------------- Enums
 
 enum Role {
   USER
@@ -78,19 +79,19 @@ enum Currency {
   EUR
 }
 
-// ------------------------------------------------- المستخدمون والملف الشخصي
+// ------------------------------------------------------- Users and profiles
 
 model User {
   id              String    @id @default(cuid())
   email           String    @unique
-  passwordHash    String? // null لمن سجّل عبر OAuth فقط
+  passwordHash    String? // null for OAuth-only accounts
   name            String?
   phone           String?
   role            Role      @default(USER)
   locale          Locale    @default(AR)
   currency        Currency  @default(EGP)
   emailVerifiedAt DateTime?
-  twoFactorSecret String? // مشفّر — 2FA اختياري
+  twoFactorSecret String? // encrypted — 2FA is optional
   isBlocked       Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -139,7 +140,7 @@ model SavedTraveler {
   @@map("saved_travelers")
 }
 
-// ------------------------------------------------------- المصادقة (NextAuth)
+// -------------------------------------------------------- Auth (NextAuth)
 
 model Account {
   id                String  @id @default(cuid())
@@ -187,7 +188,7 @@ model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
   tokenHash String   @unique
-  expiresAt DateTime // ساعة واحدة — القسم 4.4
+  expiresAt DateTime // one hour — section 4.4
   usedAt    DateTime?
   createdAt DateTime @default(now())
 
@@ -195,11 +196,11 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
-// --------------------------------------------------------- البحث وكاش العروض
+// ------------------------------------------------------ Search and offer cache
 
 model Search {
   id           String      @id @default(cuid())
-  userId       String? // null للزائر
+  userId       String? // null for guests
   type         ServiceType
   params       Json
   resultsCount Int         @default(0)
@@ -224,12 +225,12 @@ model OffersCache {
   @@map("offers_cache")
 }
 
-// ------------------------------------------------------------------ الحجوزات
+// ---------------------------------------------------------------- Bookings
 
 model Booking {
   id          String        @id @default(cuid())
-  reference   String        @unique // المرجع الظاهر للمستخدم
-  userId      String? // null لحجز الضيف
+  reference   String        @unique // the reference shown to the user
+  userId      String? // null for guest bookings
   guestEmail  String?
   type        ServiceType
   supplierId  String
@@ -243,9 +244,9 @@ model Booking {
   totalAmount    Decimal  @db.Decimal(12, 2)
   currency       Currency
 
-  idempotencyKey String    @unique // الحماية من الحجز المزدوج
+  idempotencyKey String    @unique // guards against double booking
   promoCodeId    String?
-  expiresAt      DateTime? // مهلة الجلسة للحجوزات المعلّقة
+  expiresAt      DateTime? // session deadline for pending bookings
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -292,7 +293,7 @@ model Passenger {
   @@map("passengers")
 }
 
-// --------------------------------------------------------- الدفع والاسترداد
+// ------------------------------------------------------ Payments and refunds
 
 model Payment {
   id          String        @id @default(cuid())
@@ -329,14 +330,14 @@ model Refund {
   @@map("refunds")
 }
 
-// -------------------------------------------------- المزوّدون والهامش والخصم
+// ------------------------------------- Suppliers, markup and discount codes
 
 model Supplier {
   id       String  @id // amadeus · travelpayouts · duffel · bookingcom
   name     String
   isActive Boolean @default(false)
-  priority Int     @default(100) // الأقل = الأعلى أولوية
-  config   Json    @default("{}") // إعدادات فقط — ممنوع أي مفاتيح
+  priority Int     @default(100) // lower value wins
+  config   Json    @default("{}") // settings only — never secrets
 
   bookings    Booking[]
   markupRules MarkupRule[]
@@ -347,12 +348,12 @@ model Supplier {
 
 model MarkupRule {
   id          String       @id @default(cuid())
-  supplierId  String? // null = كل المزوّدين
-  serviceType ServiceType? // null = الاثنان
-  destination String? // كود IATA أو دولة — null = الكل
+  supplierId  String? // null = all suppliers
+  serviceType ServiceType? // null = both service types
+  destination String? // IATA code or country — null = everywhere
   type        AmountType
   value       Decimal      @db.Decimal(10, 2)
-  priority    Int          @default(100) // الأكثر تحديدًا يفوز
+  priority    Int          @default(100) // the most specific rule wins
   isActive    Boolean      @default(true)
 
   supplier Supplier? @relation(fields: [supplierId], references: [id])
@@ -379,14 +380,14 @@ model PromoCode {
   @@map("promo_codes")
 }
 
-// ----------------------------------------------- المفضّلة والإشعارات والسجلات
+// ------------------------------------------ Favourites, notifications, logs
 
 model Favorite {
   id        String      @id @default(cuid())
   userId    String
   type      ServiceType
-  payload   Json // لقطة العرض المحفوظ
-  lastPrice Decimal?    @db.Decimal(12, 2) // لتنبيه تغيّر السعر
+  payload   Json // snapshot of the saved offer
+  lastPrice Decimal?    @db.Decimal(12, 2) // for the price-change alert
   createdAt DateTime    @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

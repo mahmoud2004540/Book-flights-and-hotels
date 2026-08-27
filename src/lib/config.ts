@@ -1,33 +1,31 @@
 /**
- * إعدادات المنتج — المكان الوحيد الذي تُغيَّر منه هوية المشروع وأرقامه.
- * أي قيمة هنا يجب ألا تتكرر في أي ملف آخر.
+ * Product configuration — the single place where the project's identity and
+ * numbers are set. No value here should be repeated in any other file.
  */
 
 export const BRAND = {
-  /** اسم المشروع. تغييره هنا يغيّره في كل الواجهة والإيميلات والتذاكر. */
-  nameAr: "رِحلتي",
-  nameEn: "Rehlaty",
+  /** Project name. Changing it here changes it across the UI, emails and tickets. */
+  name: "Rehlaty",
   domain: "rehlaty.com",
 } as const;
 
-/** العملات المدعومة — القسم 1 من البريف. */
+/** Supported currencies — section 1 of the brief. */
 export const CURRENCIES = ["EGP", "USD", "SAR", "AED", "EUR"] as const;
 export type CurrencyCode = (typeof CURRENCIES)[number];
-export const DEFAULT_CURRENCY: CurrencyCode = "EGP";
-
-/** اللغات المدعومة. العربية افتراضية — القسم 9. */
-export const LOCALES = ["ar", "en"] as const;
-export type AppLocale = (typeof LOCALES)[number];
-export const DEFAULT_LOCALE: AppLocale = "ar";
-
-export const LOCALE_DIRECTION: Record<AppLocale, "rtl" | "ltr"> = {
-  ar: "rtl",
-  en: "ltr",
-};
+export const DEFAULT_CURRENCY: CurrencyCode = "USD";
 
 /**
- * ترتيب المزوّدين. الأقل رقمًا = الأعلى أولوية عند تساوي السعر.
- * التفعيل الفعلي يقرأ من جدول suppliers، وهذه القيم بذرة الإعداد الأولى.
+ * Supported languages. English only for now.
+ * Strings still live in messages/ rather than in components, so adding a
+ * language later is a config change rather than a rewrite.
+ */
+export const LOCALES = ["en"] as const;
+export type AppLocale = (typeof LOCALES)[number];
+export const DEFAULT_LOCALE: AppLocale = "en";
+
+/**
+ * Supplier order. Lower number wins when prices tie.
+ * Live activation reads the suppliers table; these are the seed values.
  */
 export const SUPPLIER_PRIORITY = {
   amadeus: 10,
@@ -37,27 +35,27 @@ export const SUPPLIER_PRIORITY = {
 } as const;
 export type SupplierId = keyof typeof SUPPLIER_PRIORITY;
 
-/** مهلة إتمام الحجز بالدقائق — القسم 4.5. */
+/** Minutes allowed to complete a booking — section 4.5. */
 export const BOOKING_SESSION_MINUTES = 15;
 
-/** حدود الطلبات — القسم 7. */
+/** Request limits — section 7. */
 export const RATE_LIMITS = {
   searchPerUserPerMinute: 30,
   searchPerIpPerMinute: 100,
 } as const;
 
-/** مهل التعامل مع المزوّدين — القسم 3.3. */
+/** Supplier call budgets — section 3.3. */
 export const SUPPLIER_TIMEOUTS = {
-  /** مهلة الطلب الواحد لمزوّد واحد. */
+  /** Budget for a single request to a single supplier. */
   perRequestMs: 8_000,
-  /** المهلة الكلية لطلب بحث كامل. */
+  /** Budget for a whole search across all suppliers. */
   totalSearchMs: 15_000,
   retryAttempts: 3,
   circuitBreakerFailures: 5,
   circuitBreakerCooldownMs: 60_000,
 } as const;
 
-/** صلاحية كاش نتائج البحث — القسم 7. */
+/** Search result cache lifetimes — section 7. */
 export const CACHE_TTL_SECONDS = {
   flightSearch: 300,
   hotelSearch: 600,

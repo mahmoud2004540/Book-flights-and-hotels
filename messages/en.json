@@ -18,11 +18,6 @@
     "dark": "Dark",
     "system": "System"
   },
-  "locale": {
-    "switch": "Change language",
-    "ar": "العربية",
-    "en": "English"
-  },
   "home": {
     "eyebrow": "Searching global suppliers",
     "title": "The best price for your trip, without checking ten sites",
@@ -70,7 +65,7 @@
   },
   "status": {
     "comingSoon": "In progress",
-    "stageNotice": "Live search is wired up in the next stage. The interface, design system and localisation are in place now."
+    "stageNotice": "Live search is wired up in the next stage. The interface and design system are in place now."
   },
   "footer": {
     "tagline": "Flight and hotel search and booking.",

@@ -15,8 +15,8 @@ function readStored(): ThemeChoice {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (stored === "light" || stored === "dark" || stored === "system") return stored;
   } catch {
-    // بعض المتصفحات ترفض الوصول للتخزين في الوضع الخاص.
-    // "حسب النظام" يظل صحيحًا، فلا شيء ينكسر.
+    // Some browsers deny storage access in private mode.
+    // "System" stays a correct answer, so nothing breaks.
   }
   return "system";
 }
@@ -26,7 +26,7 @@ function subscribe(onChange: () => void): () => void {
   return () => window.removeEventListener(CHANGE_EVENT, onChange);
 }
 
-/** السيرفر لا يعرف تفضيل المتصفح، فيبدأ من "حسب النظام" دائمًا. */
+/** The server cannot know the browser's preference, so it always starts at "system". */
 function getServerSnapshot(): ThemeChoice {
   return "system";
 }
@@ -39,7 +39,7 @@ function apply(choice: ThemeChoice): void {
   try {
     localStorage.setItem(THEME_STORAGE_KEY, choice);
   } catch {
-    // التفضيل لن يُحفظ بين الزيارات، لكن الجلسة الحالية تعمل بشكل سليم.
+    // The choice will not survive to the next visit, but this session works.
   }
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }

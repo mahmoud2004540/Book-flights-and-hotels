@@ -2,11 +2,11 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 
 /**
- * توجيه اللغة. Next 16 سمّى هذه الطبقة proxy بدل middleware.
+ * Locale resolution. Next 16 renamed this layer from middleware to proxy.
  */
 export default createMiddleware(routing);
 
 export const config = {
-  // كل المسارات ما عدا نقاط الـ API والأصول الثابتة والملفات ذات الامتداد.
+  // Everything except API routes, static assets and files with an extension.
   matcher: "/((?!api|_next|_vercel|.*\\..*).*)",
 };

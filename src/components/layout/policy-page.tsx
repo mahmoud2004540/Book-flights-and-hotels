@@ -2,9 +2,9 @@ import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 
 /**
- * الصفحات القانونية المطلوبة في القسم 14.
- * المسارات موجودة من الآن حتى لا يوجّه الفوتر إلى 404،
- * ونصوصها النهائية تُراجَع قانونيًا وتُكتب في المرحلة 8 قبل الإطلاق.
+ * The legal pages required by section 14.
+ * The routes exist from the start so the footer never links to a 404;
+ * the final text is legally reviewed and written in stage 8 before launch.
  */
 export function PolicyPage({ page }: { page: string }) {
   const t = useTranslations("footer");

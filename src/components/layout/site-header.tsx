@@ -3,10 +3,9 @@ import { Plane } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { BRAND } from "@/lib/config";
 import { Button } from "@/components/ui/button";
-import { LocaleSwitcher } from "./locale-switcher";
 import { ThemeToggle } from "./theme-toggle";
 
-export function SiteHeader({ localeIsAr }: { localeIsAr: boolean }) {
+export function SiteHeader() {
   const t = useTranslations("nav");
 
   return (
@@ -17,7 +16,7 @@ export function SiteHeader({ localeIsAr }: { localeIsAr: boolean }) {
           className="flex shrink-0 items-center gap-2 font-semibold tracking-tight"
         >
           <Plane className="size-5 text-brand" aria-hidden="true" />
-          <span className="text-base">{localeIsAr ? BRAND.nameAr : BRAND.nameEn}</span>
+          <span className="text-base">{BRAND.name}</span>
         </Link>
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label={t("openMenu")}>
@@ -30,7 +29,6 @@ export function SiteHeader({ localeIsAr }: { localeIsAr: boolean }) {
         </nav>
 
         <div className="ms-auto flex items-center gap-2">
-          <LocaleSwitcher />
           <ThemeToggle />
           <Button variant="outline" size="sm" disabled className="hidden sm:inline-flex">
             {t("signIn")}

@@ -1,6 +1,6 @@
 import { createNavigation } from "next-intl/navigation";
 import { routing } from "./routing";
 
-/** بدائل واعية باللغة لـ Link و useRouter وغيرهما. */
+/** Locale-aware replacements for Link, useRouter and friends. */
 export const { Link, redirect, usePathname, useRouter, getPathname } =
   createNavigation(routing);

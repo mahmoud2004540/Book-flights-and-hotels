@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  // رؤوس الأمان — القسم 8. سياسة CSP الكاملة تُشدَّد في المرحلة 8
-  // بعد ما تتحدد نطاقات Stripe و Mapbox المطلوبة بالظبط.
+  // Security headers — section 8. The full CSP is tightened in stage 8,
+  // once the exact Stripe and Mapbox origins are known.
   async headers() {
     return [
       {

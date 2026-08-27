@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 type Tab = "flights" | "hotels";
 
 /**
- * هيكل صندوق البحث — القسم 4.1.
- * الحقول والتنقّل بلوحة المفاتيح والتوطين تعمل بالكامل هنا.
- * ربطها بالبحث الحقيقي (autocomplete والنتائج) في المرحلتين 2 و 3.
+ * The search box shell — section 4.1.
+ * Fields, keyboard navigation and copy all work here.
+ * Wiring it to live search (autocomplete and results) is stages 2 and 3.
  */
 export function SearchPanel() {
   const t = useTranslations("search");
@@ -96,10 +96,8 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
       </fieldset>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {/*
-          زر التبديل عنصر شبكي بين الحقلين لا عنصر مطلق فوقهما:
-          الإزاحة المطلقة تنقلب اتجاهها في RTL فتغطي أحد الحقلين.
-        */}
+        {/* The swap button is a grid item between the fields rather than an
+            absolutely positioned overlay, which would sit on top of one of them. */}
         <div className="grid items-end gap-3 sm:col-span-2 sm:grid-cols-[1fr_auto_1fr]">
           <Field label={t("from")} htmlFor={`${idPrefix}-from`}>
             <Input id={`${idPrefix}-from`} placeholder={t("fromPlaceholder")} disabled />
@@ -118,10 +116,10 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
         </div>
 
         <Field label={t("departDate")} htmlFor={`${idPrefix}-depart`}>
-          <Input id={`${idPrefix}-depart`} type="date" disabled className="ltr-data" />
+          <Input id={`${idPrefix}-depart`} type="date" disabled />
         </Field>
         <Field label={t("returnDate")} htmlFor={`${idPrefix}-return`}>
-          <Input id={`${idPrefix}-return`} type="date" disabled className="ltr-data" />
+          <Input id={`${idPrefix}-return`} type="date" disabled />
         </Field>
       </div>
 
@@ -152,10 +150,10 @@ function HotelFields({ idPrefix }: { idPrefix: string }) {
         <Input id={`${idPrefix}-dest`} placeholder={t("destinationPlaceholder")} disabled />
       </Field>
       <Field label={t("checkIn")} htmlFor={`${idPrefix}-checkin`}>
-        <Input id={`${idPrefix}-checkin`} type="date" disabled className="ltr-data" />
+        <Input id={`${idPrefix}-checkin`} type="date" disabled />
       </Field>
       <Field label={t("checkOut")} htmlFor={`${idPrefix}-checkout`}>
-        <Input id={`${idPrefix}-checkout`} type="date" disabled className="ltr-data" />
+        <Input id={`${idPrefix}-checkout`} type="date" disabled />
       </Field>
       <Field label={t("guests")} htmlFor={`${idPrefix}-guests`}>
         <Input id={`${idPrefix}-guests`} type="number" min={1} defaultValue={2} disabled className="tabular" />
