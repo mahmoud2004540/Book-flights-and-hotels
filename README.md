@@ -3,8 +3,8 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stage 0 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> The foundation and design system are in place; live search starts at stage 2.
+> **Status:** stages 0 and 1 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Accounts work end to end; live search starts at stage 2.
 
 ---
 
@@ -16,11 +16,14 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - A seed for suppliers, markup rules and discount codes.
 - Environment validation at boot — an incomplete configuration fails immediately with a readable message.
 - Copy lives in `messages/`, never inline in components, so adding a second language later is configuration rather than a rewrite.
+- Full authentication: email sign-up with verification, sign-in, password reset, Google and Apple sign-in when configured, and lockout after five failed attempts.
+- Account pages behind a session guard: bookings, profile and saved travellers.
+- Passport numbers encrypted at rest with AES-256-GCM; only a masked form ever reaches the browser.
 
 ## What is not built yet
 
-Sign-in, supplier integration, results pages, the booking flow, and payments.
-Each is its own stage in the roadmap.
+Supplier integration, results pages, the booking flow, and payments. Each is
+its own stage in the roadmap.
 
 ---
 
@@ -50,6 +53,9 @@ Then open `.env` and fill in the variables marked `[now]`:
 | `DATABASE_URL` | The **pooled** connection string from the Neon dashboard — see below |
 | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` locally |
 | `DEFAULT_MARKUP_PERCENT` | A number between 0 and 100 — defaults to `4.5` |
+| `AUTH_SECRET` | Generate with `openssl rand -base64 32` |
+| `ENCRYPTION_KEY` | Generate with `openssl rand -hex 32` |
+| `RESEND_API_KEY` | Optional locally — without it, emails print to the server console |
 
 Everything else is filled in when its stage arrives; leaving them empty does
 not stop the app from running.

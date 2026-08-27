@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { forgotPasswordSchema } from "@/lib/validation/auth";
+import { createResetToken } from "@/lib/auth/tokens";
+import { appUrl } from "@/lib/auth/urls";
+import { sendMail } from "@/lib/mail";
+
+/**
+ * Starts a password reset.
+ *
+ * Always answers the same way, whether or not the address has an account —
+ * otherwise this endpoint becomes a way to enumerate registered users.
+ */
+export async function POST(request: Request): Promise<NextResponse> {
+  const parsed = forgotPasswordSchema.safeParse(
+    await request.json().catch(() => null),
+  );
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { ok: false, message: "Enter a valid email address." },
+      { status: 422 },
+    );
+  }
+
+  const { email } = parsed.data;
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  // Accounts without a password signed up through Google or Apple; a reset
+  // link would create a second way in that they never asked for.
+  if (user?.passwordHash) {
+    const token = await createResetToken(email);
+    const sent = await sendMail(email, {
+      kind: "resetPassword",
+      url: appUrl(`/reset-password?token=${token}`),
+    });
+    if (!sent.ok) console.error(`Reset email failed for ${email}: ${sent.error}`);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    message: "If that address has an account, a reset link is on its way.",
+  });
+}

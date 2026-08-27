@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { BRAND } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "./user-menu";
 
 export function SiteHeader() {
   const t = useTranslations("nav");
@@ -30,9 +31,7 @@ export function SiteHeader() {
 
         <div className="ms-auto flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="outline" size="sm" disabled className="hidden sm:inline-flex">
-            {t("signIn")}
-          </Button>
+          <UserMenu />
         </div>
       </div>
     </header>

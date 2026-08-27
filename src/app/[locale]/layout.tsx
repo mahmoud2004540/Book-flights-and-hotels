@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { ThemeScript } from "@/components/layout/theme-script";
+import { AuthSessionProvider } from "@/components/layout/session-provider";
 import "../globals.css";
 
 const plexSans = IBM_Plex_Sans({
@@ -67,9 +68,11 @@ export default async function LocaleLayout({
       </head>
       <body className="flex min-h-screen flex-col">
         <NextIntlClientProvider>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
+          <AuthSessionProvider>
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </AuthSessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

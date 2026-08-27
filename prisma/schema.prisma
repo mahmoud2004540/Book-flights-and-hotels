@@ -184,6 +184,19 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model AuthAttempt {
+  // Keyed by email or IP. Kept in the database rather than memory because
+  // serverless instances do not share memory — an in-memory counter would
+  // reset on every cold start and let an attacker through.
+  identifier  String    @id
+  failedCount Int       @default(0)
+  lockedUntil DateTime?
+  lastFailAt  DateTime  @default(now())
+
+  @@index([lockedUntil])
+  @@map("auth_attempts")
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String

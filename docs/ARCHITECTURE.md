@@ -279,8 +279,8 @@ Ordered as section 16 specifies, with a pause for approval after each stage
 | # | Stage | The deliverable that proves it is done | Status |
 |---|---|---|---|
 | 0 | Foundation and setup | A running Next.js project, Prisma migrated, the design system and tokens | **Done** |
-| 1 | Authentication and profile | Email sign-up with verification, Google and Apple, password reset, saved travellers | Next |
-| 2 | Amadeus integration and flight search | A complete adapter and normalizer, a results page with filters and sorting, a ±3 day date strip, progressive rendering | Later |
+| 1 | Authentication and profile | Email sign-up with verification, Google and Apple, password reset, saved travellers | **Done** |
+| 2 | Amadeus integration and flight search | A complete adapter and normalizer, a results page with filters and sorting, a ±3 day date strip, progressive rendering | Next |
 | 3 | Hotel search and map | A dual list-and-map view, a hotel detail page, amenity and rating filters | Later |
 | 4 | Booking flow | The five steps, mandatory re-pricing, the session timer, traveller validation | Later |
 | 5 | Payment and issuance | Stripe with 3DS, verified webhooks, a ticket PDF, a confirmation email | Later |
