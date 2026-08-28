@@ -190,3 +190,33 @@
     }
   }
 }
+
+/* Map pins. Defined here rather than inline because MapLibre creates the
+   marker elements outside React's tree, so utility classes cannot be applied
+   through JSX. */
+.hotel-pin {
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  transition: background-color 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.hotel-pin:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.hotel-pin--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--brand-fg);
+  z-index: 1;
+}

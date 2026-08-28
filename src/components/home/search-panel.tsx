@@ -17,6 +17,13 @@ function defaultDepartDate(): string {
   return date.toISOString().slice(0, 10);
 }
 
+/** Three nights after check-in, so the hotel form is valid before it is touched. */
+function defaultCheckOutDate(): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + 4);
+  return date.toISOString().slice(0, 10);
+}
+
 type Tab = "flights" | "hotels";
 
 /**
@@ -26,7 +33,6 @@ type Tab = "flights" | "hotels";
 export function SearchPanel() {
   const t = useTranslations("search");
   const tHome = useTranslations("home");
-  const tStatus = useTranslations("status");
   const [tab, setTab] = useState<Tab>("flights");
   const id = useId();
   const router = useRouter();
@@ -36,11 +42,16 @@ export function SearchPanel() {
     const form = new FormData(event.currentTarget);
     const params = new URLSearchParams();
 
-    for (const key of ["origin", "destination", "departDate", "returnDate", "adults", "cabin"]) {
+    const fields =
+      tab === "flights"
+        ? ["origin", "destination", "departDate", "returnDate", "adults", "cabin"]
+        : ["cityCode", "checkIn", "checkOut", "adults", "rooms"];
+
+    for (const key of fields) {
       const value = String(form.get(key) ?? "").trim();
       if (value) params.set(key, value);
     }
-    router.push(`/flights?${params}`);
+    router.push(`${tab === "flights" ? "/flights" : "/hotels"}?${params}`);
   }
 
   const tabs: ReadonlyArray<{ value: Tab; label: string; Icon: typeof Plane }> = [
@@ -78,15 +89,13 @@ export function SearchPanel() {
         id={`${id}-panel-${tab}`}
         aria-labelledby={`${id}-tab-${tab}`}
         className="p-5 sm:p-6"
-        onSubmit={tab === "flights" ? onSubmit : (event) => event.preventDefault()}
+        onSubmit={onSubmit}
       >
         {tab === "flights" ? <FlightFields idPrefix={id} /> : <HotelFields idPrefix={id} />}
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-fg-faint">
-            {tab === "flights" ? "" : tStatus("stageNotice")}
-          </p>
-          <Button type="submit" size="lg" disabled={tab !== "flights"} className="w-full sm:w-auto">
+          <p className="text-xs text-fg-faint" />
+          <Button type="submit" size="lg" className="w-full sm:w-auto">
             <Search aria-hidden="true" />
             {t("submit")}
           </Button>
@@ -179,17 +188,36 @@ function HotelFields({ idPrefix }: { idPrefix: string }) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Field label={t("destination")} htmlFor={`${idPrefix}-dest`} className="lg:col-span-2">
-        <Input id={`${idPrefix}-dest`} placeholder={t("destinationPlaceholder")} disabled />
-      </Field>
+      <div className="lg:col-span-2">
+        <PlaceInput
+          label={t("destination")}
+          name="cityCode"
+          placeholder={t("destinationPlaceholder")}
+        />
+      </div>
       <Field label={t("checkIn")} htmlFor={`${idPrefix}-checkin`}>
-        <Input id={`${idPrefix}-checkin`} type="date" disabled />
+        <Input
+          id={`${idPrefix}-checkin`}
+          name="checkIn"
+          type="date"
+          defaultValue={defaultDepartDate()}
+          required
+        />
       </Field>
       <Field label={t("checkOut")} htmlFor={`${idPrefix}-checkout`}>
-        <Input id={`${idPrefix}-checkout`} type="date" disabled />
+        <Input
+          id={`${idPrefix}-checkout`}
+          name="checkOut"
+          type="date"
+          defaultValue={defaultCheckOutDate()}
+          required
+        />
       </Field>
       <Field label={t("guests")} htmlFor={`${idPrefix}-guests`}>
-        <Input id={`${idPrefix}-guests`} type="number" min={1} defaultValue={2} disabled className="tabular" />
+        <Input id={`${idPrefix}-guests`} name="adults" type="number" min={1} max={9} defaultValue={2} className="tabular" />
+      </Field>
+      <Field label={t("rooms")} htmlFor={`${idPrefix}-rooms`}>
+        <Input id={`${idPrefix}-rooms`} name="rooms" type="number" min={1} max={5} defaultValue={1} className="tabular" />
       </Field>
     </div>
   );

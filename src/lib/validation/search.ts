@@ -50,3 +50,21 @@ export const placesSearchSchema = z.object({
   q: z.string().trim().min(2, "Type at least two characters").max(60),
   kind: z.enum(["airport", "city", "any"]).default("any"),
 });
+
+export const hotelSearchSchema = z
+  .object({
+    cityCode: iataCode,
+    checkIn: isoDate,
+    checkOut: isoDate,
+    adults: z.coerce.number().int().min(1).max(9).default(2),
+    rooms: z.coerce.number().int().min(1).max(5).default(1),
+    currency: z.enum(CURRENCIES).default("USD"),
+    maxResults: z.coerce.number().int().min(1).max(50).default(30),
+  })
+  .refine((data) => data.checkOut > data.checkIn, {
+    // Equal dates would be a zero-night stay, which no supplier will price.
+    message: "Check-out must be after check-in",
+    path: ["checkOut"],
+  });
+
+export type HotelSearchInput = z.infer<typeof hotelSearchSchema>;

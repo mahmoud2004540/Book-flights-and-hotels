@@ -1,13 +1,16 @@
 import type {
   FlightSearchParams,
+  HotelSearchParams,
   Itinerary,
   NormalizedFlightOffer,
+  NormalizedHotelOffer,
   NormalizedPlace,
   PlaceKind,
   Segment,
   SupplierAdapter,
 } from "../types";
 import { AIRCRAFT, AIRPORTS, CARRIERS } from "./data";
+import { mockHotels } from "./hotels";
 
 /**
  * A stand-in supplier for integration and end-to-end tests — section 12.
@@ -50,7 +53,7 @@ export class MockAdapter implements SupplierAdapter {
   readonly id = "amadeus" as const;
   readonly capabilities = {
     flights: true,
-    hotels: false,
+    hotels: true,
     autocomplete: true,
     booking: false,
     cancellation: false,
@@ -74,6 +77,10 @@ export class MockAdapter implements SupplierAdapter {
         cityName: airport.city,
         countryCode: airport.country,
       }));
+  }
+
+  async searchHotels(params: HotelSearchParams): Promise<NormalizedHotelOffer[]> {
+    return mockHotels(params);
   }
 
   async searchFlights(params: FlightSearchParams): Promise<NormalizedFlightOffer[]> {

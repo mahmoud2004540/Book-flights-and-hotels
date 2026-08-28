@@ -61,7 +61,8 @@
       "premiumEconomy": "Premium economy",
       "business": "Business",
       "first": "First"
-    }
+    },
+    "rooms": "Rooms"
   },
   "status": {
     "comingSoon": "In progress",

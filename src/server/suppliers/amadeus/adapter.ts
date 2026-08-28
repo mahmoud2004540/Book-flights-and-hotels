@@ -1,14 +1,18 @@
 import { SupplierError } from "../errors";
 import type {
   FlightSearchParams,
+  HotelSearchParams,
   NormalizedFlightOffer,
+  NormalizedHotelOffer,
   NormalizedPlace,
   PlaceKind,
   SupplierAdapter,
 } from "../types";
 import { amadeusGet, readCredentials, type AmadeusCredentials } from "./client";
 import { flightOffersResponseSchema, locationsResponseSchema } from "./schemas";
+import { hotelOffersResponseSchema, hotelsByCityResponseSchema } from "./hotel-schemas";
 import { normalizeFlightOffers, normalizePlaces } from "./normalize";
+import { indexHotelDetails, normalizeHotelOffers } from "./normalize-hotels";
 
 /** How long a returned offer stays quotable before re-pricing is required. */
 const OFFER_TTL_MS = 10 * 60_000;
@@ -81,6 +85,47 @@ export class AmadeusAdapter implements SupplierAdapter {
 
     return normalizeFlightOffers(
       parsed.data,
+      params.currency,
+      new Date(Date.now() + OFFER_TTL_MS).toISOString(),
+    );
+  }
+
+  async searchHotels(params: HotelSearchParams): Promise<NormalizedHotelOffer[]> {
+    // Two calls, because Amadeus splits the index from the availability:
+    // by-city gives the hotels and their coordinates, hotel-offers gives the
+    // prices for the ones we ask about.
+    const rawList = await amadeusGet<unknown>(
+      this.credentials,
+      "/v1/reference-data/locations/hotels/by-city",
+      { cityCode: params.cityCode, radius: 20, radiusUnit: "KM" },
+    );
+
+    const list = hotelsByCityResponseSchema.safeParse(rawList);
+    if (!list.success) {
+      throw new SupplierError(this.id, "malformedResponse", "Unexpected hotels-by-city response");
+    }
+
+    const hotelIds = list.data.data.slice(0, params.maxResults).map((hotel) => hotel.hotelId);
+    if (hotelIds.length === 0) return [];
+
+    const rawOffers = await amadeusGet<unknown>(this.credentials, "/v3/shopping/hotel-offers", {
+      hotelIds: hotelIds.join(","),
+      checkInDate: params.checkIn,
+      checkOutDate: params.checkOut,
+      adults: params.adults,
+      roomQuantity: params.rooms,
+      currency: params.currency,
+    });
+
+    const offers = hotelOffersResponseSchema.safeParse(rawOffers);
+    if (!offers.success) {
+      throw new SupplierError(this.id, "malformedResponse", "Unexpected hotel-offers response");
+    }
+
+    return normalizeHotelOffers(
+      offers.data,
+      indexHotelDetails(list.data),
+      params.cityCode,
       params.currency,
       new Date(Date.now() + OFFER_TTL_MS).toISOString(),
     );

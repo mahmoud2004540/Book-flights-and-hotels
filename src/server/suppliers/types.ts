@@ -113,4 +113,63 @@ export interface SupplierAdapter {
 
   autocomplete(query: string, kind: PlaceKind): Promise<NormalizedPlace[]>;
   searchFlights(params: FlightSearchParams): Promise<NormalizedFlightOffer[]>;
+  /** Only called when capabilities.hotels is true. */
+  searchHotels(params: HotelSearchParams): Promise<NormalizedHotelOffer[]>;
 }
+
+// ------------------------------------------------------------------- hotels
+
+export type HotelSearchParams = {
+  /** IATA city code, e.g. DXB — the unit Amadeus indexes hotels by. */
+  cityCode: string;
+  checkIn: string; // YYYY-MM-DD
+  checkOut: string;
+  adults: number;
+  rooms: number;
+  currency: CurrencyCode;
+  maxResults: number;
+};
+
+export type Coordinates = { latitude: number; longitude: number };
+
+export type CancellationPolicy = {
+  refundable: boolean;
+  /** ISO timestamp after which cancelling costs money. Null when unknown. */
+  deadline: string | null;
+};
+
+export type RoomOffer = {
+  offerId: string;
+  supplierOfferRef: string;
+  roomDescription: string | null;
+  bedType: string | null;
+  boardType: string | null;
+  netPrice: Money;
+  cancellation: CancellationPolicy;
+};
+
+export type NormalizedHotelOffer = {
+  hotelId: string;
+  supplierId: SupplierId;
+  name: string;
+  /** Star rating where the supplier provides one. */
+  stars: number | null;
+  guestRating: number | null;
+  coordinates: Coordinates | null;
+  address: string | null;
+  cityCode: string;
+  distanceKm: number | null;
+  amenities: string[];
+  images: string[];
+  rooms: RoomOffer[];
+  expiresAt: string;
+};
+
+/** What the browser receives: room prices with markup applied, net removed. */
+export type PublicRoomOffer = Omit<RoomOffer, "netPrice"> & { price: Money };
+
+export type PublicHotelOffer = Omit<NormalizedHotelOffer, "rooms"> & {
+  rooms: PublicRoomOffer[];
+  /** The cheapest room, lifted out so cards and sorting do not recompute it. */
+  fromPrice: Money;
+};

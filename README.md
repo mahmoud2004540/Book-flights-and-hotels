@@ -3,8 +3,8 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0, 1 and 2 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Accounts and flight search both work end to end.
+> **Status:** stages 0 to 3 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Accounts, flight search and hotel search all work end to end.
 
 ---
 
@@ -23,10 +23,19 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - A results page with filters, three sort orders, a ±3 day date strip and skeleton loading.
 - Airport autocomplete, debounced 300ms.
 - Markup applied server-side; the supplier's net price never reaches the browser.
+- Hotel search with a linked list and map view, filters for price, stars, amenities and free cancellation, and three sort orders.
 
 ## What is not built yet
 
-Hotel search, the booking flow, and payments. Each is its own stage in the roadmap.
+The booking flow and payments. Each is its own stage in the roadmap.
+
+### Map tiles
+
+The map uses MapLibre, which needs no access token, with OpenStreetMap tiles by
+default. Those tiles are fine for development but their usage policy rules out
+production traffic — set `NEXT_PUBLIC_MAPBOX_TOKEN` before launch and the style
+switches automatically. If tiles fail to load for any reason the map says so and
+the pins and list keep working.
 
 ### Running search without Amadeus credentials
 
