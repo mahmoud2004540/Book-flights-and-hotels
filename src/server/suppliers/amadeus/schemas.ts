@@ -82,3 +82,10 @@ export const locationsResponseSchema = z.object({
 export type AmadeusFlightOffer = z.infer<typeof flightOfferSchema>;
 export type AmadeusFlightOffersResponse = z.infer<typeof flightOffersResponseSchema>;
 export type AmadeusLocationsResponse = z.infer<typeof locationsResponseSchema>;
+
+/** The confirmed-price response — POST /v1/shopping/flight-offers/pricing. */
+export const pricingResponseSchema = z.object({
+  data: z.object({
+    flightOffers: z.array(flightOfferSchema),
+  }),
+});

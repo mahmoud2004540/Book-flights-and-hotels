@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AlertTriangle, SearchX } from "lucide-react";
 import type { PublicFlightOffer } from "@/server/suppliers/types";
+import type { FlightSearchInput } from "@/lib/validation/search";
 import {
   applyFilters,
   sortOffers,
@@ -40,7 +41,13 @@ type Outcome =
  */
 type Held = { key: string; outcome: Outcome };
 
-export function FlightResults({ query }: { query: Query }) {
+export function FlightResults({
+  query,
+  search,
+}: {
+  query: Query;
+  search: FlightSearchInput;
+}) {
   const [held, setHeld] = useState<Held | null>(null);
   const [sort, setSort] = useState<SortKey>("best");
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
@@ -180,7 +187,11 @@ export function FlightResults({ query }: { query: Query }) {
             <ul className="flex flex-col gap-3">
               {visible.map((offer) => (
                 <li key={offer.offerId}>
-                  <OfferCard offer={offer} cheapest={offer.offerId === cheapestId} />
+                  <OfferCard
+                    offer={offer}
+                    cheapest={offer.offerId === cheapestId}
+                    search={{ ...search, departDate }}
+                  />
                 </li>
               ))}
             </ul>

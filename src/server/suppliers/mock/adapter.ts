@@ -1,6 +1,7 @@
 import type {
   FlightSearchParams,
   HotelSearchParams,
+  PricedOffer,
   Itinerary,
   NormalizedFlightOffer,
   NormalizedHotelOffer,
@@ -83,6 +84,50 @@ export class MockAdapter implements SupplierAdapter {
     return mockHotels(params);
   }
 
+  /**
+   * Re-pricing, with the awkward cases made reachable on purpose.
+   *
+   * Real fares move between search and checkout, and occasionally vanish. A
+   * mock that always confirms the searched price would leave the two paths
+   * that matter most in this flow — price changed, offer gone — untested. The
+   * outcome is keyed off the offer index so it is deterministic:
+   * index % 5 === 2 rises 12%, index % 5 === 4 is no longer available.
+   */
+  async confirmFlightPrice(offer: NormalizedFlightOffer): Promise<PricedOffer> {
+    const payload = offer.supplierPayload as { mockOfferIndex?: number } | null;
+    const index = payload?.mockOfferIndex ?? 0;
+
+    if (index % 5 === 4) {
+      return {
+        offerId: offer.offerId,
+        netPrice: offer.netPrice,
+        fareBreakdown: offer.fareBreakdown,
+        available: false,
+        supplierPayload: offer.supplierPayload,
+      };
+    }
+
+    const changed = index % 5 === 2;
+    const total = changed
+      ? (Number(offer.netPrice.amount) * 1.12).toFixed(2)
+      : offer.netPrice.amount;
+    const base = changed
+      ? (Number(offer.fareBreakdown.base) * 1.12).toFixed(2)
+      : offer.fareBreakdown.base;
+
+    return {
+      offerId: offer.offerId,
+      netPrice: { amount: total, currency: offer.netPrice.currency },
+      fareBreakdown: {
+        base,
+        taxesAndFees: (Number(total) - Number(base)).toFixed(2),
+        total,
+      },
+      available: true,
+      supplierPayload: offer.supplierPayload,
+    };
+  }
+
   async searchFlights(params: FlightSearchParams): Promise<NormalizedFlightOffer[]> {
     const key = `${params.origin}${params.destination}${params.departDate}${params.cabin}`;
     const random = nextRandom(seedFrom(key));
@@ -125,6 +170,7 @@ export class MockAdapter implements SupplierAdapter {
         seatsRemaining: 1 + Math.floor(random() * 9),
         validatingCarrier: carrier.code,
         expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
+        supplierPayload: { mockOfferIndex: index, key },
       });
     }
 

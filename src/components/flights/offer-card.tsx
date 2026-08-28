@@ -1,10 +1,11 @@
-import { ArrowRight, Briefcase, Plane } from "lucide-react";
+import { Briefcase, Plane } from "lucide-react";
 import type { Itinerary, PublicFlightOffer } from "@/server/suppliers/types";
+import type { FlightSearchInput } from "@/lib/validation/search";
+import { SelectOfferButton } from "./select-offer";
 import { formatClock, formatDayOffset } from "@/lib/flights";
 import { formatDuration } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 function Leg({ itinerary }: { itinerary: Itinerary }) {
   const first = itinerary.segments[0];
@@ -50,9 +51,12 @@ function Leg({ itinerary }: { itinerary: Itinerary }) {
 export function OfferCard({
   offer,
   cheapest,
+  search,
 }: {
   offer: PublicFlightOffer;
   cheapest: boolean;
+  /** Absent inside the booking flow, where the offer is already chosen. */
+  search?: FlightSearchInput;
 }) {
   const carrier = offer.itineraries[0]?.segments[0];
 
@@ -95,10 +99,7 @@ export function OfferCard({
               </p>
             )}
           </div>
-          <Button size="md" disabled>
-            Select
-            <ArrowRight aria-hidden="true" />
-          </Button>
+          {search && <SelectOfferButton offerId={offer.offerId} search={search} />}
         </div>
       </div>
     </Card>

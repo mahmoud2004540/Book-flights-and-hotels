@@ -100,6 +100,7 @@ export function normalizeFlightOffers(
       seatsRemaining: offer.numberOfBookableSeats ?? null,
       validatingCarrier: offer.validatingAirlineCodes?.[0] ?? null,
       expiresAt,
+      supplierPayload: offer,
     };
   });
 }

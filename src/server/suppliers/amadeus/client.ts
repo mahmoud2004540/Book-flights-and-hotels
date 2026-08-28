@@ -148,3 +148,51 @@ export async function amadeusGet<T>(
   logSupplierCall({ supplierId: SUPPLIER_ID, endpoint, durationMs, statusCode: 200 });
   return (await response.json()) as T;
 }
+
+export async function amadeusPost<T>(
+  credentials: AmadeusCredentials,
+  endpoint: string,
+  body: unknown,
+): Promise<T> {
+  const token = await getToken(credentials);
+  const started = Date.now();
+
+  const response = await withTimeout(SUPPLIER_ID, SUPPLIER_TIMEOUTS.perRequestMs, (signal) =>
+    fetch(`${credentials.baseUrl}${endpoint}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/vnd.amadeus+json",
+      },
+      body: JSON.stringify(body),
+      signal,
+      cache: "no-store",
+    }),
+  );
+
+  const durationMs = Date.now() - started;
+
+  if (!response.ok) {
+    const text = await response.text();
+    logSupplierCall({
+      supplierId: SUPPLIER_ID,
+      endpoint,
+      durationMs,
+      statusCode: response.status,
+      error: text,
+    });
+
+    if (response.status === 401) cachedToken = null;
+
+    throw new SupplierError(
+      SUPPLIER_ID,
+      classifyStatus(response.status),
+      `${endpoint} failed: ${text.slice(0, 300)}`,
+      response.status,
+    );
+  }
+
+  logSupplierCall({ supplierId: SUPPLIER_ID, endpoint, durationMs, statusCode: 200 });
+  return (await response.json()) as T;
+}

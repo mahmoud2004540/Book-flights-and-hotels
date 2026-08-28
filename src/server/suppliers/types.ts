@@ -90,11 +90,34 @@ export type NormalizedFlightOffer = {
   seatsRemaining: number | null;
   validatingCarrier: string | null;
   expiresAt: string;
+  /**
+   * The supplier's own offer object, kept verbatim.
+   *
+   * Amadeus re-pricing requires the whole offer posted back, not an id, so
+   * discarding this at normalization would make step 2 of the booking flow
+   * impossible. It is server-side only — the public type omits it, so it can
+   * never be serialised to the browser.
+   */
+  supplierPayload: unknown;
 };
 
-/** What the browser receives: the final price, with the supplier's cost removed. */
-export type PublicFlightOffer = Omit<NormalizedFlightOffer, "netPrice"> & {
+/** What the browser receives: the final price, with supplier internals removed. */
+export type PublicFlightOffer = Omit<
+  NormalizedFlightOffer,
+  "netPrice" | "supplierPayload"
+> & {
   price: Money;
+};
+
+/** The outcome of re-pricing an offer immediately before payment — section 4.5. */
+export type PricedOffer = {
+  offerId: string;
+  /** The supplier's price now, which may differ from the searched price. */
+  netPrice: Money;
+  fareBreakdown: FareBreakdown;
+  /** False when the supplier no longer sells this offer at all. */
+  available: boolean;
+  supplierPayload: unknown;
 };
 
 // --------------------------------------------------------------- the adapter
@@ -115,6 +138,13 @@ export interface SupplierAdapter {
   searchFlights(params: FlightSearchParams): Promise<NormalizedFlightOffer[]>;
   /** Only called when capabilities.hotels is true. */
   searchHotels(params: HotelSearchParams): Promise<NormalizedHotelOffer[]>;
+
+  /**
+   * Confirms what the offer costs right now. Called immediately before payment
+   * and never skipped: fares move between search and checkout, and selling a
+   * price the supplier no longer honours is the most common way a booking fails.
+   */
+  confirmFlightPrice(offer: NormalizedFlightOffer): Promise<PricedOffer>;
 }
 
 // ------------------------------------------------------------------- hotels

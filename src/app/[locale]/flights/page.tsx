@@ -54,6 +54,7 @@ export default async function FlightsPage({
       </header>
 
       <FlightResults
+        search={query}
         query={{
           origin: query.origin,
           destination: query.destination,

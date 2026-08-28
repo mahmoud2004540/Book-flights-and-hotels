@@ -1,6 +1,7 @@
 import { SupplierError } from "../errors";
 import type {
   FlightSearchParams,
+  PricedOffer,
   HotelSearchParams,
   NormalizedFlightOffer,
   NormalizedHotelOffer,
@@ -8,8 +9,12 @@ import type {
   PlaceKind,
   SupplierAdapter,
 } from "../types";
-import { amadeusGet, readCredentials, type AmadeusCredentials } from "./client";
-import { flightOffersResponseSchema, locationsResponseSchema } from "./schemas";
+import { amadeusGet, amadeusPost, readCredentials, type AmadeusCredentials } from "./client";
+import {
+  flightOffersResponseSchema,
+  locationsResponseSchema,
+  pricingResponseSchema,
+} from "./schemas";
 import { hotelOffersResponseSchema, hotelsByCityResponseSchema } from "./hotel-schemas";
 import { normalizeFlightOffers, normalizePlaces } from "./normalize";
 import { indexHotelDetails, normalizeHotelOffers } from "./normalize-hotels";
@@ -129,5 +134,47 @@ export class AmadeusAdapter implements SupplierAdapter {
       params.currency,
       new Date(Date.now() + OFFER_TTL_MS).toISOString(),
     );
+  }
+
+  async confirmFlightPrice(offer: NormalizedFlightOffer): Promise<PricedOffer> {
+    // Amadeus prices the whole offer object, not a reference to it — which is
+    // why the raw payload is carried through from the search.
+    const raw = await amadeusPost<unknown>(
+      this.credentials,
+      "/v1/shopping/flight-offers/pricing",
+      { data: { type: "flight-offers-pricing", flightOffers: [offer.supplierPayload] } },
+    );
+
+    const parsed = pricingResponseSchema.safeParse(raw);
+    if (!parsed.success) {
+      throw new SupplierError(this.id, "malformedResponse", "Unexpected pricing response");
+    }
+
+    const priced = parsed.data.data.flightOffers[0];
+    if (!priced) {
+      // The supplier answered but has nothing to sell: the fare is gone.
+      return {
+        offerId: offer.offerId,
+        netPrice: offer.netPrice,
+        fareBreakdown: offer.fareBreakdown,
+        available: false,
+        supplierPayload: offer.supplierPayload,
+      };
+    }
+
+    const total = priced.price.grandTotal ?? priced.price.total;
+    const base = priced.price.base ?? total;
+
+    return {
+      offerId: offer.offerId,
+      netPrice: { amount: total, currency: offer.netPrice.currency },
+      fareBreakdown: {
+        base,
+        taxesAndFees: (Number(total) - Number(base)).toFixed(2),
+        total,
+      },
+      available: true,
+      supplierPayload: priced,
+    };
   }
 }

@@ -3,8 +3,8 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 to 3 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Accounts, flight search and hotel search all work end to end.
+> **Status:** stages 0 to 4 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Search and the full booking flow work end to end; payment is stage 5.
 
 ---
 
@@ -24,10 +24,12 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Airport autocomplete, debounced 300ms.
 - Markup applied server-side; the supplier's net price never reaches the browser.
 - Hotel search with a linked list and map view, filters for price, stars, amenities and free cancellation, and three sort orders.
+- A five-step booking flow with mandatory re-pricing, a visible session timer, passport and age validation, and an idempotency key that survives a double-click.
 
 ## What is not built yet
 
-The booking flow and payments. Each is its own stage in the roadmap.
+Payment and ticket issuance. Confirming a booking today records it as `PENDING`;
+stage 5 adds Stripe, webhooks, the PDF ticket and the confirmation email.
 
 ### Map tiles
 
