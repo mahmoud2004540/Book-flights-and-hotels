@@ -1,4 +1,4 @@
-import { CACHE_TTL_SECONDS } from "@/lib/config";
+import { CACHE_TTL_SECONDS, type SupplierId } from "@/lib/config";
 import { ServiceType } from "@prisma/client";
 import { applyMarkup } from "@/server/pricing/markup";
 import { cacheKey, readCache, writeCache } from "./cache";
@@ -10,6 +10,7 @@ import type {
   NormalizedHotelOffer,
   PublicHotelOffer,
 } from "./types";
+import { beats, byPriceThenSupplier } from "./ranking";
 
 /**
  * The hotel counterpart of the flight orchestrator — same rules:
@@ -24,6 +25,14 @@ export type HotelSearchOutcome = {
   fromCache: boolean;
 };
 
+/** A hotel with no rooms priced sorts last rather than free. */
+function cheapestRoom(hotel: NormalizedHotelOffer): { amount: string; supplierId: SupplierId } {
+  return {
+    amount: hotel.rooms[0]?.netPrice.amount ?? String(Number.MAX_SAFE_INTEGER),
+    supplierId: hotel.supplierId,
+  };
+}
+
 function dedupe(hotels: NormalizedHotelOffer[]): NormalizedHotelOffer[] {
   // The same property can come from several suppliers. Keyed on the hotel id
   // so duplicates collapse to whichever quoted the cheapest room.
@@ -31,9 +40,9 @@ function dedupe(hotels: NormalizedHotelOffer[]): NormalizedHotelOffer[] {
 
   for (const hotel of hotels) {
     const existing = byHotel.get(hotel.hotelId);
-    const cheapest = Number(hotel.rooms[0]?.netPrice.amount ?? Infinity);
-    const incumbent = Number(existing?.rooms[0]?.netPrice.amount ?? Infinity);
-    if (!existing || cheapest < incumbent) byHotel.set(hotel.hotelId, hotel);
+    if (!existing || beats(cheapestRoom(hotel), cheapestRoom(existing))) {
+      byHotel.set(hotel.hotelId, hotel);
+    }
   }
 
   return [...byHotel.values()];
@@ -109,9 +118,8 @@ export async function searchHotels(params: HotelSearchParams): Promise<HotelSear
     }
   }
 
-  const hotels = dedupe(merged).sort(
-    (a, b) =>
-      Number(a.rooms[0]?.netPrice.amount ?? 0) - Number(b.rooms[0]?.netPrice.amount ?? 0),
+  const hotels = dedupe(merged).sort((a, b) =>
+    byPriceThenSupplier(cheapestRoom(a), cheapestRoom(b)),
   );
 
   if (succeeded > 0) {

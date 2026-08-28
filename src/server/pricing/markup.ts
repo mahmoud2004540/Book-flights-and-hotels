@@ -85,3 +85,36 @@ export async function applyMarkup(
     total: (net + markup).toFixed(2),
   };
 }
+
+/**
+ * Rescales a supplier's fare breakdown onto the price we actually charge.
+ *
+ * Passing the supplier's own breakdown straight through would publish our net
+ * cost beside the marked-up price — subtract one from the other and the margin
+ * is in plain sight. Scaling keeps the breakdown honest for the traveller: the
+ * lines are in the supplier's own proportion and add up to exactly what they
+ * pay, with the margin carried inside the fare rather than named as a line.
+ *
+ * Taxes are the remainder rather than a second rounded product, so the two
+ * lines always sum to the total instead of drifting a cent apart.
+ */
+export function rescaleFare(
+  fare: { base: string; taxesAndFees: string; total: string },
+  chargedTotal: string,
+): { base: string; taxesAndFees: string; total: string } {
+  const net = Number(fare.total);
+  const charged = Number(chargedTotal);
+
+  // A zero or unparseable net leaves nothing to scale by; charge the whole
+  // amount as base rather than dividing by zero.
+  if (!Number.isFinite(net) || net <= 0 || !Number.isFinite(charged)) {
+    return { base: chargedTotal, taxesAndFees: "0.00", total: chargedTotal };
+  }
+
+  const base = Math.round((Number(fare.base) / net) * charged * 100) / 100;
+  return {
+    base: base.toFixed(2),
+    taxesAndFees: (charged - base).toFixed(2),
+    total: charged.toFixed(2),
+  };
+}

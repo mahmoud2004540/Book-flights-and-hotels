@@ -15,9 +15,9 @@ if (!connectionString) {
 const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 
 const SUPPLIERS = [
-  { id: "amadeus", name: "Amadeus Self-Service", priority: 10, isActive: true },
-  { id: "travelpayouts", name: "Travelpayouts", priority: 20, isActive: false },
-  { id: "duffel", name: "Duffel", priority: 30, isActive: false },
+  { id: "duffel", name: "Duffel", priority: 10, isActive: false },
+  { id: "amadeus", name: "Amadeus Self-Service", priority: 20, isActive: true },
+  { id: "travelpayouts", name: "Travelpayouts", priority: 30, isActive: false },
   { id: "bookingcom", name: "Booking.com Demand API", priority: 40, isActive: false },
 ] as const;
 

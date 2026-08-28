@@ -21,9 +21,10 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Account pages behind a session guard: bookings, profile and saved travellers.
 - Passport numbers encrypted at rest with AES-256-GCM; only a masked form ever reaches the browser.
 - Flight search across suppliers behind one adapter interface, with retry, a circuit breaker, per-call timeouts and a shared result cache.
+- Results ranked cheapest first across every supplier, with an explicit tie-break: an identical fare from two suppliers goes to the one that issues the ticket through us.
 - A results page with filters, three sort orders, a ±3 day date strip and skeleton loading.
 - Airport autocomplete, debounced 300ms.
-- Markup applied server-side; the supplier's net price never reaches the browser.
+- Markup applied server-side. Neither the supplier's net price, its verbatim offer object, nor a fare breakdown totalling our cost ever reaches the browser — the breakdown is rescaled onto the price actually charged, so its lines add up to what the traveller pays.
 - Hotel search with a linked list and map view, filters for price, stars, amenities and free cancellation, and three sort orders.
 - A five-step booking flow with mandatory re-pricing, a visible session timer, passport and age validation, and an idempotency key that survives a double-click.
 - Payment through Stripe Payment Intents with 3-D Secure, a signature-verified webhook, a PDF ticket, and confirmation emails.

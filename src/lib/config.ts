@@ -25,12 +25,29 @@ export const DEFAULT_LOCALE: AppLocale = "en";
 
 /**
  * Supplier order. Lower number wins when prices tie.
+ *
+ * Price decides the list on its own: every supplier is queried in parallel and
+ * the results are sorted cheapest first, so this order never makes a traveller
+ * pay more. It only settles the case where the same flight comes back from two
+ * suppliers at the same price, and there the tie goes to the supplier that
+ * gives the better booking:
+ *
+ *  - Duffel issues the ticket through us. We are the merchant of record, so the
+ *    traveller never leaves, and cancellation and refunds run through our own
+ *    code rather than a third party's support queue.
+ *  - Amadeus has the widest inventory, but issuing on it needs an IATA licence
+ *    we do not hold yet, so a booking there is a redirect for now.
+ *  - Travelpayouts is affiliate only: the headline price is often the lowest,
+ *    but the traveller finishes on someone else's site and we own nothing after
+ *    the click — no ticket, no cancellation, no support.
+ *  - Booking.com serves hotels and does not compete on these flights at all.
+ *
  * Live activation reads the suppliers table; these are the seed values.
  */
 export const SUPPLIER_PRIORITY = {
-  amadeus: 10,
-  travelpayouts: 20,
-  duffel: 30,
+  duffel: 10,
+  amadeus: 20,
+  travelpayouts: 30,
   bookingcom: 40,
 } as const;
 export type SupplierId = keyof typeof SUPPLIER_PRIORITY;

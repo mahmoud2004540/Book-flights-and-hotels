@@ -4,9 +4,9 @@
 
 -- Suppliers. Only Amadeus is enabled; the rest are enabled in their stage.
 INSERT INTO "suppliers" ("id", "name", "isActive", "priority", "config") VALUES
-  ('amadeus',       'Amadeus Self-Service',   true,  10, '{}'),
-  ('travelpayouts', 'Travelpayouts',          false, 20, '{}'),
-  ('duffel',        'Duffel',                 false, 30, '{}'),
+  ('duffel',        'Duffel',                 false, 10, '{}'),
+  ('amadeus',       'Amadeus Self-Service',   true,  20, '{}'),
+  ('travelpayouts', 'Travelpayouts',          false, 30, '{}'),
   ('bookingcom',    'Booking.com Demand API', false, 40, '{}')
 ON CONFLICT ("id") DO UPDATE
   SET "name" = EXCLUDED."name",

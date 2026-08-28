@@ -293,8 +293,10 @@ Ordered as section 16 specifies, with a pause for approval after each stage
 ## 12. Open items
 
 1. **Project name** — "Rehlaty" is a placeholder, set in `src/lib/config.ts`.
-2. **Supplier order** — currently Amadeus → Travelpayouts → Duffel →
-   Booking.com. Promoting Travelpayouts for faster commission is a cheap change.
+2. ~~**Supplier order**~~ — settled: cheapest wins the list outright, and an
+   exact tie goes to the supplier that issues the ticket through us, so the
+   order is Duffel → Amadeus → Travelpayouts → Booking.com. See
+   `src/server/suppliers/ranking.ts`.
 3. **Default markup** for `DEFAULT_MARKUP_PERCENT` — 3%–6% is typical.
 4. **Target markets** — determines when Paymob and Tap are added, and the
    default currency.

@@ -1,10 +1,11 @@
 import { CACHE_TTL_SECONDS, SUPPLIER_TIMEOUTS } from "@/lib/config";
 import { ServiceType } from "@prisma/client";
-import { applyMarkup } from "@/server/pricing/markup";
+import { applyMarkup, rescaleFare } from "@/server/pricing/markup";
 import { cacheKey, readCache, writeCache } from "./cache";
 import { isOpen, recordFailure, recordSuccess } from "./resilience/circuit-breaker";
 import { withRetry } from "./resilience/retry";
 import { flightAdapters } from "./registry";
+import { beats, byPriceThenSupplier } from "./ranking";
 import type {
   FlightSearchParams,
   NormalizedFlightOffer,
@@ -39,7 +40,13 @@ function dedupe(offers: NormalizedFlightOffer[]): NormalizedFlightOffer[] {
       .join("|");
 
     const existing = byRoute.get(signature);
-    if (!existing || Number(offer.netPrice.amount) < Number(existing.netPrice.amount)) {
+    if (
+      !existing ||
+      beats(
+        { amount: offer.netPrice.amount, supplierId: offer.supplierId },
+        { amount: existing.netPrice.amount, supplierId: existing.supplierId },
+      )
+    ) {
       byRoute.set(signature, offer);
     }
   }
@@ -59,10 +66,19 @@ async function toPublic(
         destination,
       });
 
-      // netPrice is destructured away rather than deleted, so it cannot be
+      // Both are destructured away rather than deleted, so neither can be
       // reintroduced by accident — the public type has no such field.
-      const { netPrice: _netPrice, ...rest } = offer;
-      return { ...rest, price: { amount: priced.total, currency: offer.netPrice.currency } };
+      // supplierPayload is the supplier's verbatim offer, and on Amadeus that
+      // object carries the net price; it stays server-side, where the booking
+      // flow reads it from the draft rather than from the browser.
+      const { netPrice: _netPrice, supplierPayload: _payload, ...rest } = offer;
+      return {
+        ...rest,
+        // Rescaled, not passed through: the supplier's own breakdown totals our
+        // net cost, and printing it beside the charged price gives the margin away.
+        fareBreakdown: rescaleFare(offer.fareBreakdown, priced.total),
+        price: { amount: priced.total, currency: offer.netPrice.currency },
+      };
     }),
   );
 }
@@ -108,8 +124,11 @@ export async function searchFlights(params: FlightSearchParams): Promise<SearchO
     }
   }
 
-  const offers = dedupe(merged).sort(
-    (a, b) => Number(a.netPrice.amount) - Number(b.netPrice.amount),
+  const offers = dedupe(merged).sort((a, b) =>
+    byPriceThenSupplier(
+      { amount: a.netPrice.amount, supplierId: a.supplierId },
+      { amount: b.netPrice.amount, supplierId: b.supplierId },
+    ),
   );
 
   // Only a successful search is cached. Caching an empty result from a total

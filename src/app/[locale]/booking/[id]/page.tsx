@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { readDraft } from "@/server/booking/draft";
+import { rescaleFare } from "@/server/pricing/markup";
 import { BookingWizard } from "@/components/booking/wizard";
 import type { PublicFlightOffer } from "@/server/suppliers/types";
 
@@ -18,10 +19,16 @@ export default async function BookingPage({
 
   const session = await auth();
 
-  // The supplier payload and net price are stripped here, at the boundary,
-  // so neither can reach the browser through the wizard's props.
+  // The supplier payload and net price are stripped here, at the boundary, so
+  // neither can reach the browser through the wizard's props. The fare
+  // breakdown is rescaled for the same reason: as the supplier sends it, it
+  // totals our net cost, and beside the held price it gives the margin away.
   const { netPrice: _netPrice, supplierPayload: _payload, ...rest } = draft.offer;
-  const offer: PublicFlightOffer = { ...rest, price: draft.quotedPrice };
+  const offer: PublicFlightOffer = {
+    ...rest,
+    fareBreakdown: rescaleFare(draft.offer.fareBreakdown, draft.quotedPrice.amount),
+    price: draft.quotedPrice,
+  };
 
   const departDate = draft.offer.itineraries[0]?.segments[0]?.from.at.slice(0, 10) ?? "";
 
