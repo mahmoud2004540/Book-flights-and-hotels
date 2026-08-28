@@ -3,8 +3,8 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 and 1 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Accounts work end to end; live search starts at stage 2.
+> **Status:** stages 0, 1 and 2 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Accounts and flight search both work end to end.
 
 ---
 
@@ -19,11 +19,21 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Full authentication: email sign-up with verification, sign-in, password reset, Google and Apple sign-in when configured, and lockout after five failed attempts.
 - Account pages behind a session guard: bookings, profile and saved travellers.
 - Passport numbers encrypted at rest with AES-256-GCM; only a masked form ever reaches the browser.
+- Flight search across suppliers behind one adapter interface, with retry, a circuit breaker, per-call timeouts and a shared result cache.
+- A results page with filters, three sort orders, a ±3 day date strip and skeleton loading.
+- Airport autocomplete, debounced 300ms.
+- Markup applied server-side; the supplier's net price never reaches the browser.
 
 ## What is not built yet
 
-Supplier integration, results pages, the booking flow, and payments. Each is
-its own stage in the roadmap.
+Hotel search, the booking flow, and payments. Each is its own stage in the roadmap.
+
+### Running search without Amadeus credentials
+
+Set `SUPPLIER_MOCK_ENABLED=true` in `.env` to use the mock supplier, which
+returns deterministic fixture data so the whole pipeline can be exercised
+locally. It is refused in production by both the environment validator and the
+supplier registry.
 
 ---
 

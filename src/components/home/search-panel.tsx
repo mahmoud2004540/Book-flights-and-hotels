@@ -3,17 +3,25 @@
 import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeftRight, Building2, Plane, Search } from "lucide-react";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select } from "@/components/ui/field";
+import { PlaceInput } from "./place-input";
 import { cn } from "@/lib/utils";
+
+/** Tomorrow, as the default departure date — today's flights are mostly gone. */
+function defaultDepartDate(): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
 
 type Tab = "flights" | "hotels";
 
 /**
- * The search box shell — section 4.1.
- * Fields, keyboard navigation and copy all work here.
- * Wiring it to live search (autocomplete and results) is stages 2 and 3.
+ * The search box — section 4.1.
+ * Flights submit to the results page; hotels arrive in stage 3.
  */
 export function SearchPanel() {
   const t = useTranslations("search");
@@ -21,6 +29,19 @@ export function SearchPanel() {
   const tStatus = useTranslations("status");
   const [tab, setTab] = useState<Tab>("flights");
   const id = useId();
+  const router = useRouter();
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const params = new URLSearchParams();
+
+    for (const key of ["origin", "destination", "departDate", "returnDate", "adults", "cabin"]) {
+      const value = String(form.get(key) ?? "").trim();
+      if (value) params.set(key, value);
+    }
+    router.push(`/flights?${params}`);
+  }
 
   const tabs: ReadonlyArray<{ value: Tab; label: string; Icon: typeof Plane }> = [
     { value: "flights", label: tHome("searchTabs.flights"), Icon: Plane },
@@ -52,22 +73,25 @@ export function SearchPanel() {
         ))}
       </div>
 
-      <div
+      <form
         role="tabpanel"
         id={`${id}-panel-${tab}`}
         aria-labelledby={`${id}-tab-${tab}`}
         className="p-5 sm:p-6"
+        onSubmit={tab === "flights" ? onSubmit : (event) => event.preventDefault()}
       >
         {tab === "flights" ? <FlightFields idPrefix={id} /> : <HotelFields idPrefix={id} />}
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-fg-faint">{tStatus("stageNotice")}</p>
-          <Button size="lg" disabled className="w-full sm:w-auto">
+          <p className="text-xs text-fg-faint">
+            {tab === "flights" ? "" : tStatus("stageNotice")}
+          </p>
+          <Button type="submit" size="lg" disabled={tab !== "flights"} className="w-full sm:w-auto">
             <Search aria-hidden="true" />
             {t("submit")}
           </Button>
         </div>
-      </div>
+      </form>
     </Card>
   );
 }
@@ -99,9 +123,7 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
         {/* The swap button is a grid item between the fields rather than an
             absolutely positioned overlay, which would sit on top of one of them. */}
         <div className="grid items-end gap-3 sm:col-span-2 sm:grid-cols-[1fr_auto_1fr]">
-          <Field label={t("from")} htmlFor={`${idPrefix}-from`}>
-            <Input id={`${idPrefix}-from`} placeholder={t("fromPlaceholder")} disabled />
-          </Field>
+          <PlaceInput label={t("from")} name="origin" placeholder={t("fromPlaceholder")} />
           <button
             type="button"
             aria-label={t("swap")}
@@ -110,28 +132,39 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
           >
             <ArrowLeftRight className="size-3.5" aria-hidden="true" />
           </button>
-          <Field label={t("to")} htmlFor={`${idPrefix}-to`}>
-            <Input id={`${idPrefix}-to`} placeholder={t("toPlaceholder")} disabled />
-          </Field>
+          <PlaceInput label={t("to")} name="destination" placeholder={t("toPlaceholder")} />
         </div>
 
         <Field label={t("departDate")} htmlFor={`${idPrefix}-depart`}>
-          <Input id={`${idPrefix}-depart`} type="date" disabled />
+          <Input
+            id={`${idPrefix}-depart`}
+            name="departDate"
+            type="date"
+            defaultValue={defaultDepartDate()}
+            required
+          />
         </Field>
         <Field label={t("returnDate")} htmlFor={`${idPrefix}-return`}>
-          <Input id={`${idPrefix}-return`} type="date" disabled />
+          <Input id={`${idPrefix}-return`} name="returnDate" type="date" />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t("passengers")} htmlFor={`${idPrefix}-pax`}>
-          <Input id={`${idPrefix}-pax`} type="number" min={1} defaultValue={1} disabled className="tabular" />
+          <Input id={`${idPrefix}-pax`} name="adults" type="number" min={1} max={9} defaultValue={1} className="tabular" />
         </Field>
         <Field label={t("cabinClass")} htmlFor={`${idPrefix}-cabin`}>
-          <Select id={`${idPrefix}-cabin`} disabled>
-            {(["economy", "premiumEconomy", "business", "first"] as const).map((c) => (
-              <option key={c} value={c}>
-                {t(`cabin.${c}`)}
+          <Select id={`${idPrefix}-cabin`} name="cabin" defaultValue="ECONOMY">
+            {(
+              [
+                ["ECONOMY", "economy"],
+                ["PREMIUM_ECONOMY", "premiumEconomy"],
+                ["BUSINESS", "business"],
+                ["FIRST", "first"],
+              ] as const
+            ).map(([value, key]) => (
+              <option key={value} value={value}>
+                {t(`cabin.${key}`)}
               </option>
             ))}
           </Select>
