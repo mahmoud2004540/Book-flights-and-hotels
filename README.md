@@ -3,8 +3,8 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 to 4 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Search and the full booking flow work end to end; payment is stage 5.
+> **Status:** stages 0 to 5 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Search, booking, payment and ticketing all work end to end.
 
 ---
 
@@ -25,11 +25,20 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Markup applied server-side; the supplier's net price never reaches the browser.
 - Hotel search with a linked list and map view, filters for price, stars, amenities and free cancellation, and three sort orders.
 - A five-step booking flow with mandatory re-pricing, a visible session timer, passport and age validation, and an idempotency key that survives a double-click.
+- Payment through Stripe Payment Intents with 3-D Secure, a signature-verified webhook, a PDF ticket, and confirmation emails.
+- Automatic refund when a payment succeeds but issuance fails, with an admin alert and an email to the traveller.
 
 ## What is not built yet
 
-Payment and ticket issuance. Confirming a booking today records it as `PENDING`;
-stage 5 adds Stripe, webhooks, the PDF ticket and the confirmation email.
+The user dashboard beyond a booking list (stage 6), the admin dashboard (stage 7),
+and the test suite, security audit and deployment work (stage 8).
+
+### Running payments without Stripe keys
+
+Set `PAYMENT_MOCK_ENABLED=true` to use the mock payment provider. No card is
+taken and no money moves, but the real settlement path runs: an amount ending
+in `.01` is declined, `.02` stays processing, anything else succeeds. It is
+refused in production by both the environment validator and the registry.
 
 ### Map tiles
 

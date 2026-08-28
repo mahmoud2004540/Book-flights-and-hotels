@@ -15,6 +15,11 @@ const serverSchema = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),
+  /** The mock payment provider — tests only, and refused in production. */
+  PAYMENT_MOCK_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
@@ -35,6 +40,12 @@ export function getServerEnv(): ServerEnv {
   if (parsed.data.SUPPLIER_MOCK_ENABLED && parsed.data.NODE_ENV === "production") {
     throw new Error(
       "SUPPLIER_MOCK_ENABLED=true is not allowed in production — the mock adapter is for tests only.",
+    );
+  }
+
+  if (parsed.data.PAYMENT_MOCK_ENABLED && parsed.data.NODE_ENV === "production") {
+    throw new Error(
+      "PAYMENT_MOCK_ENABLED=true is not allowed in production — no real payment may go through the mock.",
     );
   }
 

@@ -283,8 +283,8 @@ Ordered as section 16 specifies, with a pause for approval after each stage
 | 2 | Amadeus integration and flight search | A complete adapter and normalizer, a results page with filters and sorting, a ±3 day date strip, progressive rendering | **Done** |
 | 3 | Hotel search and map | A dual list-and-map view, amenity and rating filters | **Done** |
 | 4 | Booking flow | The five steps, mandatory re-pricing, the session timer, traveller validation | **Done** |
-| 5 | Payment and issuance | Stripe with 3DS, verified webhooks, a ticket PDF, a confirmation email | Next |
-| 6 | User dashboard | Upcoming, past and cancelled bookings, cancellation and refunds under supplier terms, pre-travel reminders | Later |
+| 5 | Payment and issuance | Stripe with 3DS, verified webhooks, a ticket PDF, a confirmation email | **Done** |
+| 6 | User dashboard | Upcoming, past and cancelled bookings, cancellation and refunds under supplier terms, pre-travel reminders | Next |
 | 7 | Admin dashboard | Statistics, booking and user management, markup rules, supplier activation, tiered permissions | Later |
 | 8 | Performance, security and deployment | Unit, integration and E2E tests, a security audit, Lighthouse ≥ 90, deployment to Vercel, a pre-launch checklist | Later |
 

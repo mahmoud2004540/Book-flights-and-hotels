@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
-import { CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { Card, CardBody } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
@@ -20,12 +20,31 @@ export default async function ConfirmedPage({
   });
   if (!booking) notFound();
 
+  const confirmed = booking.status === "CONFIRMED";
+  const refunded = booking.status === "REFUNDED";
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6">
       <Card>
         <CardBody className="flex flex-col items-start gap-4">
-          <CheckCircle2 className="size-8 text-accent" aria-hidden="true" />
-          <h1 className="text-2xl font-semibold">Your booking is recorded</h1>
+          {refunded ? (
+            <AlertTriangle className="size-8 text-warn" aria-hidden="true" />
+          ) : (
+            <CheckCircle2 className="size-8 text-accent" aria-hidden="true" />
+          )}
+          <h1 className="text-2xl font-semibold">
+            {confirmed
+              ? "Your booking is confirmed"
+              : refunded
+                ? "We could not complete this booking"
+                : "Your booking is recorded"}
+          </h1>
+          {refunded && (
+            <p className="text-sm text-fg-muted">
+              Your payment went through, but the airline could not issue the booking. We have
+              refunded you in full and nothing further is needed from you.
+            </p>
+          )}
 
           <div className="w-full rounded-md border border-line bg-surface-2 px-4 py-3">
             <p className="text-xs text-fg-muted">Booking reference</p>
@@ -53,13 +72,25 @@ export default async function ConfirmedPage({
             </div>
           </dl>
 
-          <p className="text-sm text-fg-muted">
-            Payment and ticket issuance are wired up in the next stage. Nothing has been charged.
-          </p>
-
-          <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
-            Go to my bookings
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            {booking.status === "PENDING" && (
+              <Link href={`/booking/pay/${booking.reference}`} className={buttonVariants({})}>
+                Continue to payment
+              </Link>
+            )}
+            {confirmed && (
+              <a
+                href={`/api/bookings/${booking.reference}/ticket`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Download aria-hidden="true" />
+                Download ticket
+              </a>
+            )}
+            <Link href="/dashboard" className={buttonVariants({ variant: "ghost" })}>
+              Go to my bookings
+            </Link>
+          </div>
         </CardBody>
       </Card>
     </div>

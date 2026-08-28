@@ -71,7 +71,7 @@ export function ReviewStep({
       const body = (await response.json()) as { ok?: boolean; reference?: string; reason?: string };
 
       if (body.ok && body.reference) {
-        router.push(`/booking/confirmed/${body.reference}`);
+        router.push(`/booking/pay/${body.reference}`);
         return;
       }
       onError(
@@ -182,8 +182,7 @@ export function ReviewStep({
       </Button>
 
       <p className="text-xs text-fg-faint">
-        Payment is wired up in the next stage. Confirming now records the booking and holds it
-        for you.
+        The next step is payment. Your fare is held until then.
       </p>
     </div>
   );

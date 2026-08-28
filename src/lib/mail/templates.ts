@@ -9,7 +9,9 @@ import { BRAND } from "@/lib/config";
 export type MailTemplate =
   | { kind: "verifyEmail"; name: string | null; url: string }
   | { kind: "resetPassword"; url: string }
-  | { kind: "passwordChanged" };
+  | { kind: "passwordChanged" }
+  | { kind: "bookingConfirmed"; reference: string; pnr: string | null; total: string }
+  | { kind: "bookingRefunded"; reference: string; total: string };
 
 type Rendered = { subject: string; html: string; text: string };
 
@@ -69,6 +71,38 @@ export function renderTemplate(template: MailTemplate): Rendered {
           { label: "Choose a new password", url: template.url },
         ),
         text: `Reset your ${BRAND.name} password. The link expires in one hour and works once.\n\n${template.url}\n\nIf you did not ask for this, ignore this email — your password stays as it is.`,
+      };
+
+    case "bookingConfirmed": {
+      const pnrLine = template.pnr
+        ? `<p style="margin:12px 0 0;">Airline reference: <strong>${template.pnr}</strong></p>`
+        : "";
+      return {
+        subject: `Your ${BRAND.name} booking ${template.reference} is confirmed`,
+        html: layout(
+          "Your booking is confirmed",
+          `<p style="margin:0;">Keep this reference — you will need it at check-in and if you contact us.</p>
+           <p style="margin:14px 0 0;font-size:19px;color:${INK};"><strong>${template.reference}</strong></p>
+           ${pnrLine}
+           <p style="margin:14px 0 0;">Total paid: <strong>${template.total}</strong></p>`,
+        ),
+        text: `Your ${BRAND.name} booking is confirmed.\n\nReference: ${template.reference}${
+          template.pnr ? `\nAirline reference: ${template.pnr}` : ""
+        }\nTotal paid: ${template.total}`,
+      };
+    }
+
+    case "bookingRefunded":
+      return {
+        subject: `Your ${BRAND.name} booking ${template.reference} was refunded`,
+        html: layout(
+          "We could not complete this booking",
+          `<p style="margin:0;">Your payment went through, but the airline could not issue the booking. We have refunded you in full — no action is needed.</p>
+           <p style="margin:14px 0 0;">Reference: <strong>${template.reference}</strong></p>
+           <p style="margin:6px 0 0;">Refunded: <strong>${template.total}</strong></p>
+           <p style="margin:14px 0 0;">Refunds usually reach your account within five to ten working days.</p>`,
+        ),
+        text: `Your ${BRAND.name} booking could not be completed.\n\nYour payment went through but the airline could not issue the booking, so we have refunded you in full.\n\nReference: ${template.reference}\nRefunded: ${template.total}\n\nRefunds usually arrive within five to ten working days.`,
       };
 
     case "passwordChanged":
