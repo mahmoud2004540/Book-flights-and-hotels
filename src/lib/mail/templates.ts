@@ -11,7 +11,9 @@ export type MailTemplate =
   | { kind: "resetPassword"; url: string }
   | { kind: "passwordChanged" }
   | { kind: "bookingConfirmed"; reference: string; pnr: string | null; total: string }
-  | { kind: "bookingRefunded"; reference: string; total: string };
+  | { kind: "bookingRefunded"; reference: string; total: string }
+  | { kind: "bookingCancelled"; reference: string; refund: string }
+  | { kind: "tripReminder"; reference: string; departsAt: string; route: string };
 
 type Rendered = { subject: string; html: string; text: string };
 
@@ -103,6 +105,30 @@ export function renderTemplate(template: MailTemplate): Rendered {
            <p style="margin:14px 0 0;">Refunds usually reach your account within five to ten working days.</p>`,
         ),
         text: `Your ${BRAND.name} booking could not be completed.\n\nYour payment went through but the airline could not issue the booking, so we have refunded you in full.\n\nReference: ${template.reference}\nRefunded: ${template.total}\n\nRefunds usually arrive within five to ten working days.`,
+      };
+
+    case "bookingCancelled":
+      return {
+        subject: `Your ${BRAND.name} booking ${template.reference} is cancelled`,
+        html: layout(
+          "Your booking is cancelled",
+          `<p style="margin:0;">Reference: <strong>${template.reference}</strong></p>
+           <p style="margin:12px 0 0;">Refund: <strong>${template.refund}</strong></p>
+           <p style="margin:12px 0 0;">Any refund usually reaches your account within five to ten working days.</p>`,
+        ),
+        text: `Your ${BRAND.name} booking ${template.reference} is cancelled.\n\nRefund: ${template.refund}\n\nAny refund usually arrives within five to ten working days.`,
+      };
+
+    case "tripReminder":
+      return {
+        subject: `You fly tomorrow — ${template.route}`,
+        html: layout(
+          "Your trip is tomorrow",
+          `<p style="margin:0;">${template.route}, departing <strong>${template.departsAt}</strong>.</p>
+           <p style="margin:12px 0 0;">Reference: <strong>${template.reference}</strong></p>
+           <p style="margin:12px 0 0;">Check in with the airline, and carry the passport you booked with.</p>`,
+        ),
+        text: `You fly tomorrow.\n\n${template.route}, departing ${template.departsAt}.\nReference: ${template.reference}\n\nCheck in with the airline and carry the passport you booked with.`,
       };
 
     case "passwordChanged":

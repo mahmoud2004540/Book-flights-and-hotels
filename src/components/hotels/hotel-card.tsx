@@ -4,6 +4,7 @@ import { amenityLabel, hasFreeCancellation } from "@/lib/hotels";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { formatAmount } from "@/lib/format";
 
 function Stars({ count }: { count: number }) {
   return (
@@ -68,7 +69,7 @@ export function HotelCard({
             </p>
           )}
           <p className="text-xl font-semibold tabular">
-            {hotel.fromPrice.currency} {Number(hotel.fromPrice.amount).toLocaleString("en-GB")}
+            {formatAmount(hotel.fromPrice.amount, hotel.fromPrice.currency)}
           </p>
           <p className="text-xs text-fg-muted">total stay</p>
         </div>

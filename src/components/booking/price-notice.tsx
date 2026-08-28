@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import type { Money } from "@/server/suppliers/types";
 import { Button } from "@/components/ui/button";
+import { formatAmount } from "@/lib/format";
 
 /**
  * The result of re-pricing — section 4.5.
@@ -35,7 +36,7 @@ export function PriceNotice({
         <span>
           The price is confirmed at{" "}
           <span className="font-semibold tabular">
-            {confirmed.currency} {Number(confirmed.amount).toLocaleString("en-GB")}
+            {formatAmount(confirmed.amount, confirmed.currency)}
           </span>
           . Nothing has changed since you searched.
         </span>
@@ -61,15 +62,15 @@ export function PriceNotice({
           <p className="mt-1">
             You saw{" "}
             <span className="tabular line-through">
-              {quoted.currency} {Number(quoted.amount).toLocaleString("en-GB")}
+              {formatAmount(quoted.amount, quoted.currency)}
             </span>
             . It is now{" "}
             <span className="font-semibold tabular">
-              {confirmed.currency} {Number(confirmed.amount).toLocaleString("en-GB")}
+              {formatAmount(confirmed.amount, confirmed.currency)}
             </span>{" "}
             — {rose ? "an increase" : "a decrease"} of{" "}
             <span className="tabular">
-              {confirmed.currency} {Math.abs(difference).toLocaleString("en-GB")}
+              {formatAmount(Math.abs(difference), confirmed.currency)}
             </span>
             .
           </p>

@@ -3,8 +3,9 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 to 5 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Search, booking, payment and ticketing all work end to end.
+> **Status:** stages 0 to 6 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Search, booking, payment, ticketing and the traveller's own dashboard all work
+> end to end.
 
 ---
 
@@ -27,11 +28,15 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - A five-step booking flow with mandatory re-pricing, a visible session timer, passport and age validation, and an idempotency key that survives a double-click.
 - Payment through Stripe Payment Intents with 3-D Secure, a signature-verified webhook, a PDF ticket, and confirmation emails.
 - Automatic refund when a payment succeeds but issuance fails, with an admin alert and an email to the traveller.
+- A dashboard that splits bookings into upcoming, past and cancelled, with a detail page carrying the itinerary, travellers, payments, refunds and the ticket.
+- Self-service cancellation that quotes the refund *before* anything is cancelled and re-quotes server-side on confirm, refunding through the payment provider.
+- A 24-hour pre-travel reminder on a secret-protected cron route, deduplicated so a scheduler retry cannot send twice.
 
 ## What is not built yet
 
-The user dashboard beyond a booking list (stage 6), the admin dashboard (stage 7),
-and the test suite, security audit and deployment work (stage 8).
+The admin dashboard (stage 7), and the full test suite, security audit and
+deployment work (stage 8). Unit tests cover the cancellation and bucketing
+rules today; the integration and end-to-end suites arrive with stage 8.
 
 ### Running payments without Stripe keys
 
@@ -39,6 +44,18 @@ Set `PAYMENT_MOCK_ENABLED=true` to use the mock payment provider. No card is
 taken and no money moves, but the real settlement path runs: an amount ending
 in `.01` is declined, `.02` stays processing, anything else succeeds. It is
 refused in production by both the environment validator and the registry.
+
+### Pre-travel reminders
+
+`/api/cron/reminders` sends the 24-hour reminder. `vercel.json` schedules it
+hourly; Vercel signs its own cron calls with `Authorization: Bearer $CRON_SECRET`,
+so setting `CRON_SECRET` is all that is needed. Any other scheduler works the
+same way — send that header. Without the variable the route refuses every call,
+because an open endpoint that sends email is a spam relay.
+
+The window is two hours wide so an hourly schedule cannot miss a departure by
+landing between ticks, and every send is recorded before it goes out, so a
+scheduler retry finds the record and does not send again.
 
 ### Map tiles
 
@@ -164,6 +181,7 @@ Open <http://localhost:3000>.
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
+| `npm test` | Unit tests (`node:test` via tsx) |
 | `npm run typecheck` | Type check without emitting |
 | `npm run db:migrate` | Create and apply a migration in development |
 | `npm run db:deploy` | Apply existing migrations — use this everywhere else |

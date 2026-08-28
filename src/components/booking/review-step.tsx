@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { Field, Input } from "@/components/ui/field";
 import { formatClock } from "@/lib/flights";
+import { formatAmount } from "@/lib/format";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -124,7 +125,7 @@ export function ReviewStep({
           <h3 className="mb-1 font-semibold">Price</h3>
           <Row
             label={`Fare for ${people} traveller${people > 1 ? "s" : ""}`}
-            value={`${fare.currency} ${Number(fare.amount).toLocaleString("en-GB")}`}
+            value={formatAmount(fare.amount, fare.currency)}
           />
           {bags > 0 && <Row label={`Extra bags (${extras.extraBags} each)`} value={`${fare.currency} ${bags}`} />}
           {seats > 0 && <Row label="Seat selection" value={`${fare.currency} ${seats}`} />}
@@ -132,7 +133,7 @@ export function ReviewStep({
           <div className="mt-2 flex items-baseline justify-between gap-4 border-t border-line pt-3">
             <span className="font-semibold">Total, taxes included</span>
             <span className="text-xl font-semibold tabular">
-              {fare.currency} {total.toLocaleString("en-GB")}
+              {formatAmount(total, fare.currency)}
             </span>
           </div>
         </CardBody>

@@ -411,7 +411,11 @@ model Favorite {
 
 model Notification {
   id        String       @id @default(cuid())
-  userId    String
+  // Null for a guest booking, mirroring bookings: we still sent the message
+  // and still need the record, there is simply no account attached to it.
+  // Without this the guest path has nothing to deduplicate against and the
+  // scheduler re-sends the same reminder on every run.
+  userId    String?
   type      String
   channel   NotifChannel
   payload   Json
@@ -419,9 +423,10 @@ model Notification {
   readAt    DateTime?
   createdAt DateTime     @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, readAt])
+  @@index([type, createdAt])
   @@map("notifications")
 }
 

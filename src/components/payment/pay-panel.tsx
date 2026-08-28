@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { FormStatus } from "@/components/auth/form-status";
+import { formatAmount } from "@/lib/format";
 
 type Phase = "creating" | "ready" | "paying" | "settling" | "failed";
 
@@ -116,7 +117,7 @@ export function PayPanel({
             <div className="min-w-0">
               <h2 className="font-semibold">Pay for booking {reference}</h2>
               <p className="mt-1 text-sm text-fg-muted tabular">
-                {currency} {Number(amount).toLocaleString("en-GB")} · charged once
+                {formatAmount(amount, currency)} · charged once
               </p>
             </div>
           </div>
@@ -146,7 +147,7 @@ export function PayPanel({
               <Loader2 className="animate-spin" aria-hidden="true" />
             )}
             {phase === "creating" && "Preparing payment…"}
-            {phase === "ready" && `Pay ${currency} ${Number(amount).toLocaleString("en-GB")}`}
+            {phase === "ready" && `Pay ${formatAmount(amount, currency)}`}
             {phase === "paying" && "Taking payment…"}
             {phase === "settling" && "Confirming with the airline…"}
             {phase === "failed" && "Try again"}

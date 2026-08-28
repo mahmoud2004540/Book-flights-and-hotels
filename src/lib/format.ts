@@ -1,15 +1,25 @@
-import type { CurrencyCode } from "./config";
-
 /** Locale-aware formatting for numbers, dates and currency — section 9. */
 
 const INTL_LOCALE = "en-GB";
 
-export function formatMoney(amount: number, currency: CurrencyCode): string {
-  return new Intl.NumberFormat(INTL_LOCALE, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+const AMOUNT = new Intl.NumberFormat(INTL_LOCALE, {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/**
+ * Money as "USD 1,234.50".
+ *
+ * The code is written out rather than using Intl's currency style, which
+ * renders USD as "US$" in en-GB and reads as a different currency to someone
+ * comparing prices. Always two decimals: a total shown as "397.1" looks like a
+ * figure that has been rounded, and nothing on a receipt may look rounded.
+ *
+ * Amounts arrive as strings from Prisma Decimal columns and are accepted as
+ * such, so no caller has to remember to convert.
+ */
+export function formatAmount(amount: number | string, currency: string): string {
+  return `${currency} ${AMOUNT.format(Number(amount))}`;
 }
 
 export function formatDate(

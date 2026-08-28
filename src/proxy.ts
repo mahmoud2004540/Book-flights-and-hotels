@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 const intlProxy = createMiddleware(routing);
 
 /** Routes that require a session. Checked again server-side where data is read. */
-const PROTECTED = ["/dashboard", "/profile", "/travellers"];
+const PROTECTED = ["/dashboard", "/profile", "/travellers", "/bookings"];
 
 /**
  * Locale resolution, plus a cheap signed-out redirect for account routes.

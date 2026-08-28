@@ -114,6 +114,9 @@ export async function POST(
               details: {
                 itineraries: draft.offer.itineraries,
                 validatingCarrier: draft.offer.validatingCarrier,
+                // Kept so cancellation terms can be quoted later without
+                // asking the supplier about an offer that no longer exists.
+                refundable: draft.offer.refundable,
               } as unknown as Prisma.InputJsonValue,
               amount: Number(draft.confirmedPrice.amount).toFixed(2),
             },

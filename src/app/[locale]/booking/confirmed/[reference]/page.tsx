@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { Card, CardBody } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
+import { formatAmount } from "@/lib/format";
 
 export default async function ConfirmedPage({
   params,
@@ -63,7 +64,7 @@ export default async function ConfirmedPage({
             <div className="flex justify-between gap-4">
               <dt className="text-fg-muted">Total</dt>
               <dd className="tabular">
-                {booking.currency} {Number(booking.totalAmount).toLocaleString("en-GB")}
+                {formatAmount(booking.totalAmount.toString(), booking.currency)}
               </dd>
             </div>
             <div className="flex justify-between gap-4">

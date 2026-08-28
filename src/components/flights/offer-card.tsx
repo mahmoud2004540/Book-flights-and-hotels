@@ -3,7 +3,7 @@ import type { Itinerary, PublicFlightOffer } from "@/server/suppliers/types";
 import type { FlightSearchInput } from "@/lib/validation/search";
 import { SelectOfferButton } from "./select-offer";
 import { formatClock, formatDayOffset } from "@/lib/flights";
-import { formatDuration } from "@/lib/format";
+import { formatAmount, formatDuration } from "@/lib/format";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -90,7 +90,7 @@ export function OfferCard({
         <div className="flex flex-row items-end justify-between gap-3 border-t border-line-soft pt-4 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:border-s sm:ps-6 sm:pt-0">
           <div className="text-right">
             <p className="text-2xl font-semibold tabular">
-              {offer.price.currency} {Number(offer.price.amount).toLocaleString("en-GB")}
+              {formatAmount(offer.price.amount, offer.price.currency)}
             </p>
             <p className="text-xs text-fg-muted">Total, taxes included</p>
             {offer.seatsRemaining !== null && offer.seatsRemaining <= 4 && (
