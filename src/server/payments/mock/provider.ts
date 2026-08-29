@@ -31,9 +31,22 @@ type MockIntent = {
   refunded: string;
 };
 
-const intents = new Map<string, MockIntent>();
+/**
+ * Held on globalThis rather than in module scope, for the same reason the
+ * Prisma client is: the dev server re-evaluates modules as it rebuilds, and a
+ * module-scoped map gets duplicated across bundles. The route that creates an
+ * intent then writes to one map and the route that confirms it reads another,
+ * and the payment fails with "Unknown intent" — after an unrelated edit, in a
+ * test that passed a minute earlier.
+ */
+const store = globalThis as unknown as {
+  mockIntents?: Map<string, MockIntent>;
+  mockIdempotency?: Map<string, string>;
+};
+
+const intents = (store.mockIntents ??= new Map<string, MockIntent>());
 /** Idempotency: the same key must return the same intent, never a second one. */
-const byIdempotencyKey = new Map<string, string>();
+const byIdempotencyKey = (store.mockIdempotency ??= new Map<string, string>());
 
 function outcomeFor(amount: string): PaymentStatusResult["status"] {
   const cents = amount.split(".")[1] ?? "00";

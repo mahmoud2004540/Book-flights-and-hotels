@@ -20,7 +20,7 @@ step("it is served as a PDF", (ticket.headers()["content-type"] ?? "").includes(
 const bytes = await ticket.body();
 step("the file really is a PDF", bytes.subarray(0, 5).toString() === "%PDF-", `${bytes.length} bytes`);
 
-const unknown = await page.request.get(`${BASE}/api/bookings/WVG-NOPE99/ticket`);
+const unknown = await page.request.get(`${BASE}/api/bookings/WFL-NOPE99/ticket`);
 step("an unknown reference gets no ticket", unknown.status() === 404);
 
 // An unsigned webhook must never move a booking: it is the one endpoint an

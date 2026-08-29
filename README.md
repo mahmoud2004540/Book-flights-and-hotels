@@ -1,4 +1,4 @@
-# Weissvogel — flight and hotel search and booking
+# Weissflug — flight and hotel search and booking
 
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
@@ -192,14 +192,14 @@ You should see 21 tables, four rows in `suppliers`, and two markup rules.
 <summary>Alternative: local PostgreSQL instead of Neon</summary>
 
 ```bash
-docker run --name weissvogel-db -e POSTGRES_PASSWORD=dev \
-  -e POSTGRES_DB=weissvogel -p 5432:5432 -d postgres:16
+docker run --name weissflug-db -e POSTGRES_PASSWORD=dev \
+  -e POSTGRES_DB=weissflug -p 5432:5432 -d postgres:16
 ```
 
 Then in `.env`:
 
 ```
-DATABASE_URL="postgresql://postgres:dev@localhost:5432/weissvogel?schema=public"
+DATABASE_URL="postgresql://postgres:dev@localhost:5432/weissflug?schema=public"
 ```
 
 </details>

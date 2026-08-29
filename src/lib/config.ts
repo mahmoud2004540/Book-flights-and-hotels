@@ -9,21 +9,21 @@ export const BRAND = {
    * booking references and the key the theme is remembered under — everything
    * that used to spell it out separately now reads it from this object.
    *
-   * "Weissvogel" is German for a white bird, written with ss rather than the
+   * "Weissflug" is German for a white flight, written with ss rather than the
    * ß it would take in German. The letter has no ASCII form, and this name has
    * to survive a domain, an email header and a PDF written in a Latin-1
    * encoding without becoming a question mark in any of them.
    */
-  name: "Weissvogel",
-  domain: "weissvogel.com",
+  name: "Weissflug",
+  domain: "weissflug.com",
   /** Lower-case, for storage keys and event names. */
-  slug: "weissvogel",
+  slug: "weissflug",
   /**
    * Prefix on every booking reference. Three letters, because this gets read
    * down a phone line. Older references keep whatever prefix they were issued
    * with — they are stored whole, so nothing looks them up by shape.
    */
-  referencePrefix: "WVG",
+  referencePrefix: "WFL",
 } as const;
 
 /** Supported currencies — section 1 of the brief. */

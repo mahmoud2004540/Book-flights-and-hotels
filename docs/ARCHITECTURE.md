@@ -2,7 +2,7 @@
 
 > Stage 0 deliverable. A rendered version is published as an Artifact alongside this file.
 
-Weissvogel is a flight and hotel search and booking platform, built on a unified
+Weissflug is a flight and hotel search and booking platform, built on a unified
 adapter layer so that swapping any supplier or payment gateway is a
 configuration change rather than a rewrite.
 
@@ -292,7 +292,7 @@ Ordered as section 16 specifies, with a pause for approval after each stage
 
 ## 12. Open items
 
-1. ~~**Project name**~~ — settled: "Weissvogel", German for a white bird,
+1. ~~**Project name**~~ — settled: "Weissflug", German for a white flight,
    set in `BRAND` in `src/lib/config.ts`. Everything that used to spell the
    name out separately — the booking prefix, the theme storage key, the
    sender address — now reads it from there.
