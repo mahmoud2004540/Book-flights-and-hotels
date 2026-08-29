@@ -3,9 +3,9 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 to 6 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Search, booking, payment, ticketing and the traveller's own dashboard all work
-> end to end.
+> **Status:** stages 0 to 7 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
+> Search, booking, payment, ticketing, the traveller's dashboard and the admin
+> area all work end to end.
 
 ---
 
@@ -32,12 +32,30 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - A dashboard that splits bookings into upcoming, past and cancelled, with a detail page carrying the itinerary, travellers, payments, refunds and the ticket.
 - Self-service cancellation that quotes the refund *before* anything is cancelled and re-quotes server-side on confirm, refunding through the payment provider.
 - A 24-hour pre-travel reminder on a secret-protected cron route, deduplicated so a scheduler retry cannot send twice.
+- An admin area on three tiers — support, finance, super admin — where every page and every route checks a named capability, not a role name.
+- Statistics, booking and user search, markup rules and supplier activation, with every change written to an audit log naming who made it.
+- Lockout rules that hold whether the request came from the UI or a script: nobody demotes or blocks themselves, the last super admin cannot be removed, and the last active supplier cannot be switched off.
 
 ## What is not built yet
 
-The admin dashboard (stage 7), and the full test suite, security audit and
-deployment work (stage 8). Unit tests cover the cancellation and bucketing
-rules today; the integration and end-to-end suites arrive with stage 8.
+The full test suite, security audit and deployment work (stage 8). Unit tests
+cover the pricing, cancellation, bucketing, ranking and permission rules today;
+the integration and end-to-end suites arrive with stage 8.
+
+### Your first administrator
+
+Sign up through the app, then promote that account once:
+
+```sql
+UPDATE "users" SET "role" = 'SUPER_ADMIN' WHERE "email" = 'you@example.com';
+```
+
+Sign out and back in afterwards — the session token carries the role, and the
+one you are holding still says `USER`. From then on roles are granted from
+**Admin → Users**, and only a super admin may grant one.
+
+The seed deliberately creates no admin account: a hardcoded one is a credential
+shared by everybody who can read the repository.
 
 ### Running payments without Stripe keys
 

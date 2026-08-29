@@ -30,3 +30,16 @@ ON CONFLICT ("code") DO NOTHING;
 SELECT 'suppliers' AS "table", count(*) AS "rows" FROM "suppliers"
 UNION ALL SELECT 'markup_rules', count(*) FROM "markup_rules"
 UNION ALL SELECT 'promo_codes',  count(*) FROM "promo_codes";
+
+-- ---------------------------------------------------------------------------
+-- Your first administrator.
+--
+-- Sign up through the app first, then run this once with your own address. The
+-- seed cannot know it, and a hardcoded admin account in a seed file is a
+-- credential everybody who reads the repository shares.
+--
+--   UPDATE "users" SET "role" = 'SUPER_ADMIN' WHERE "email" = 'you@example.com';
+--
+-- Sign out and back in afterwards: the session token carries the role, and the
+-- one you already hold still says USER.
+-- ---------------------------------------------------------------------------

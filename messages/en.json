@@ -151,5 +151,15 @@
     "memberSince": "Member since",
     "noTravellersTitle": "No saved travellers",
     "noTravellersBody": "Save passport and date-of-birth details once, and they fill themselves in on every booking after that."
+  },
+  "admin": {
+    "title": "Admin",
+    "overview": "Overview",
+    "bookings": "Bookings",
+    "users": "Users",
+    "markup": "Markup rules",
+    "suppliers": "Suppliers",
+    "window": "Last {days} days",
+    "signedInAs": "Signed in as {email} · {role}"
   }
 }
