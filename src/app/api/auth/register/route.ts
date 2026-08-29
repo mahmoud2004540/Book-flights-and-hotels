@@ -7,6 +7,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createVerificationToken } from "@/lib/auth/tokens";
 import { appUrl } from "@/lib/auth/urls";
 import { sendMail } from "@/lib/mail";
+import { checkAuthLimit, clientIp } from "@/server/rate-limit";
 
 /**
  * Sign-up.
@@ -22,6 +23,16 @@ const NEUTRAL_RESPONSE = {
 } as const;
 
 export async function POST(request: Request): Promise<NextResponse> {
+  // Each accepted sign-up sends a message to whatever address was typed, so an
+  // unlimited endpoint is an open relay pointed at strangers.
+  const perIp = checkAuthLimit(clientIp(request));
+  if (!perIp.allowed) {
+    return NextResponse.json(
+      { ok: false, message: "Too many attempts. Try again shortly." },
+      { status: 429, headers: { "retry-after": String(perIp.retryAfterSeconds) } },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

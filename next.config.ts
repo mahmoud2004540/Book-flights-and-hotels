@@ -9,8 +9,9 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
-  // Security headers — section 8. The full CSP is tightened in stage 8,
-  // once the exact Stripe and Mapbox origins are known.
+  // Security headers — section 8. The Content-Security-Policy is not here: it
+  // carries a per-request nonce and so is set in proxy.ts, where one can be
+  // generated. These are the static ones.
   async headers() {
     return [
       {

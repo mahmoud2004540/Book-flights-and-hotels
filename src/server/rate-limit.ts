@@ -48,7 +48,29 @@ export function resetRateLimits(): void {
   windows.clear();
 }
 
+/**
+ * The caller's address, from the forwarded header.
+ *
+ * This trusts the platform to set it. Behind Vercel — and any proxy that
+ * terminates TLS — a client-supplied x-forwarded-for is overwritten, so the
+ * first entry is the real address. Served directly, without such a proxy, this
+ * header is attacker-controlled and every per-IP limit here can be sidestepped
+ * by varying it, which is why the limit that has to hold is per-address and in
+ * the database instead.
+ */
 export function clientIp(request: Request): string {
   const forwarded = request.headers.get("x-forwarded-for");
   return forwarded?.split(",")[0]?.trim() ?? "unknown";
+}
+
+/**
+ * The limit for endpoints that send email.
+ *
+ * Per IP and in memory, so it is the first line rather than the only one: a
+ * serverless deployment gives each instance its own window, and an attacker
+ * spread across instances gets a multiple of this. The per-address limit in
+ * mail-limit.ts is the one that actually holds, because it counts rows.
+ */
+export function checkAuthLimit(ip: string): RateVerdict {
+  return check(`auth:${ip}`, RATE_LIMITS.authPerIpPerMinute);
 }

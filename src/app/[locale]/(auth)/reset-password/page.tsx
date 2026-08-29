@@ -23,7 +23,7 @@ export default async function ResetPasswordPage({
       ) : (
         <div className="flex flex-col gap-4">
           <FormStatus tone="error">{t("resetLinkMissing")}</FormStatus>
-          <Link href="/forgot-password" className="text-sm text-accent hover:underline">
+          <Link href="/forgot-password" className="text-sm text-accent underline underline-offset-2">
             {t("requestNewLink")}
           </Link>
         </div>

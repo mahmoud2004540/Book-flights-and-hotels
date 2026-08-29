@@ -21,7 +21,7 @@ export default async function SignUpPage({
       footer={
         <>
           {t("haveAccount")}{" "}
-          <Link href="/sign-in" className="text-accent hover:underline">
+          <Link href="/sign-in" className="text-accent underline underline-offset-2">
             {t("signIn")}
           </Link>
         </>

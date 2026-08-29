@@ -24,10 +24,16 @@
 
   --fg: #111823;
   --fg-muted: #54637a;
-  --fg-faint: #7a8798;
+  /* Darkened from #7a8798: 3.65:1 on white and 3.10:1 on --surface-2, both
+     under AA for the small labels that use it. Now 5.44:1 and 4.62:1. */
+  --fg-faint: #5f6a80;
 
-  --brand: #a85d06;
-  --brand-hover: #8c4d04;
+  /* Darkened from #a85d06, which failed WCAG AA as text on --brand-soft
+     (3.98:1). It is now 5.30:1 there and 6.61:1 on white, and the buttons that
+     use it as a background gained contrast rather than losing any. The chart
+     series keeps the lighter hue: a bar is a graphic, judged at 3:1. */
+  --brand: #8c4d04;
+  --brand-hover: #733e03;
   --brand-soft: #f5e4cc;
   --brand-fg: #ffffff;
 

@@ -8,7 +8,10 @@ import { formatAmount } from "@/lib/format";
 
 function Stars({ count }: { count: number }) {
   return (
-    <span className="flex items-center gap-0.5" aria-label={`${count} star hotel`}>
+    // role="img" because the stars are a picture of a rating: without it the
+    // aria-label is prohibited on a bare span and screen readers announce
+    // nothing at all.
+    <span role="img" className="flex items-center gap-0.5" aria-label={`${count} star hotel`}>
       {Array.from({ length: count }, (_, index) => (
         <Star key={index} className="size-3 fill-brand text-brand" aria-hidden="true" />
       ))}

@@ -44,7 +44,14 @@ export function SearchPanel() {
 
     const fields =
       tab === "flights"
-        ? ["origin", "destination", "departDate", "returnDate", "adults", "cabin"]
+        ? [
+            "origin",
+            "destination",
+            "departDate",
+            "returnDate",
+            "adults",
+            "cabin",
+          ]
         : ["cityCode", "checkIn", "checkOut", "adults", "rooms"];
 
     for (const key of fields) {
@@ -54,14 +61,19 @@ export function SearchPanel() {
     router.push(`${tab === "flights" ? "/flights" : "/hotels"}?${params}`);
   }
 
-  const tabs: ReadonlyArray<{ value: Tab; label: string; Icon: typeof Plane }> = [
-    { value: "flights", label: tHome("searchTabs.flights"), Icon: Plane },
-    { value: "hotels", label: tHome("searchTabs.hotels"), Icon: Building2 },
-  ];
+  const tabs: ReadonlyArray<{ value: Tab; label: string; Icon: typeof Plane }> =
+    [
+      { value: "flights", label: tHome("searchTabs.flights"), Icon: Plane },
+      { value: "hotels", label: tHome("searchTabs.hotels"), Icon: Building2 },
+    ];
 
   return (
     <Card className="overflow-hidden shadow-lg">
-      <div role="tablist" aria-label={tHome("eyebrow")} className="flex border-b border-line">
+      <div
+        role="tablist"
+        aria-label={tHome("eyebrow")}
+        className="flex border-b border-line"
+      >
         {tabs.map(({ value, label, Icon }) => (
           <button
             key={value}
@@ -84,23 +96,30 @@ export function SearchPanel() {
         ))}
       </div>
 
-      <form
+      {/* The panel wraps the form rather than being it: ARIA does not allow
+          role="tabpanel" on a <form>, and a browser given both treats the
+          element as neither. */}
+      <div
         role="tabpanel"
         id={`${id}-panel-${tab}`}
         aria-labelledby={`${id}-tab-${tab}`}
-        className="p-5 sm:p-6"
-        onSubmit={onSubmit}
       >
-        {tab === "flights" ? <FlightFields idPrefix={id} /> : <HotelFields idPrefix={id} />}
+        <form className="p-5 sm:p-6" onSubmit={onSubmit}>
+          {tab === "flights" ? (
+            <FlightFields idPrefix={id} />
+          ) : (
+            <HotelFields idPrefix={id} />
+          )}
 
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-fg-faint" />
-          <Button type="submit" size="lg" className="w-full sm:w-auto">
-            <Search aria-hidden="true" />
-            {t("submit")}
-          </Button>
-        </div>
-      </form>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-fg-faint" />
+            <Button type="submit" size="lg" className="w-full sm:w-auto">
+              <Search aria-hidden="true" />
+              {t("submit")}
+            </Button>
+          </div>
+        </form>
+      </div>
     </Card>
   );
 }
@@ -132,7 +151,11 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
         {/* The swap button is a grid item between the fields rather than an
             absolutely positioned overlay, which would sit on top of one of them. */}
         <div className="grid items-end gap-3 sm:col-span-2 sm:grid-cols-[1fr_auto_1fr]">
-          <PlaceInput label={t("from")} name="origin" placeholder={t("fromPlaceholder")} />
+          <PlaceInput
+            label={t("from")}
+            name="origin"
+            placeholder={t("fromPlaceholder")}
+          />
           <button
             type="button"
             aria-label={t("swap")}
@@ -141,7 +164,11 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
           >
             <ArrowLeftRight className="size-3.5" aria-hidden="true" />
           </button>
-          <PlaceInput label={t("to")} name="destination" placeholder={t("toPlaceholder")} />
+          <PlaceInput
+            label={t("to")}
+            name="destination"
+            placeholder={t("toPlaceholder")}
+          />
         </div>
 
         <Field label={t("departDate")} htmlFor={`${idPrefix}-depart`}>
@@ -160,7 +187,15 @@ function FlightFields({ idPrefix }: { idPrefix: string }) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={t("passengers")} htmlFor={`${idPrefix}-pax`}>
-          <Input id={`${idPrefix}-pax`} name="adults" type="number" min={1} max={9} defaultValue={1} className="tabular" />
+          <Input
+            id={`${idPrefix}-pax`}
+            name="adults"
+            type="number"
+            min={1}
+            max={9}
+            defaultValue={1}
+            className="tabular"
+          />
         </Field>
         <Field label={t("cabinClass")} htmlFor={`${idPrefix}-cabin`}>
           <Select id={`${idPrefix}-cabin`} name="cabin" defaultValue="ECONOMY">
@@ -214,10 +249,26 @@ function HotelFields({ idPrefix }: { idPrefix: string }) {
         />
       </Field>
       <Field label={t("guests")} htmlFor={`${idPrefix}-guests`}>
-        <Input id={`${idPrefix}-guests`} name="adults" type="number" min={1} max={9} defaultValue={2} className="tabular" />
+        <Input
+          id={`${idPrefix}-guests`}
+          name="adults"
+          type="number"
+          min={1}
+          max={9}
+          defaultValue={2}
+          className="tabular"
+        />
       </Field>
       <Field label={t("rooms")} htmlFor={`${idPrefix}-rooms`}>
-        <Input id={`${idPrefix}-rooms`} name="rooms" type="number" min={1} max={5} defaultValue={1} className="tabular" />
+        <Input
+          id={`${idPrefix}-rooms`}
+          name="rooms"
+          type="number"
+          min={1}
+          max={5}
+          defaultValue={1}
+          className="tabular"
+        />
       </Field>
     </div>
   );

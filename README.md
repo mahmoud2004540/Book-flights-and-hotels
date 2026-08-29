@@ -3,9 +3,10 @@
 Search and compare flight and hotel prices across several global suppliers in
 one request, with self-service sign-up and booking — no human agent in the loop.
 
-> **Status:** stages 0 to 7 complete, per the [roadmap](docs/ARCHITECTURE.md#11-roadmap).
-> Search, booking, payment, ticketing, the traveller's dashboard and the admin
-> area all work end to end.
+> **Status:** all eight stages complete, per the
+> [roadmap](docs/ARCHITECTURE.md#11-roadmap). What remains before it can sell a
+> ticket is commercial, not technical — see the
+> [pre-launch checklist](docs/PRE-LAUNCH.md).
 
 ---
 
@@ -36,11 +37,32 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Statistics, booking and user search, markup rules and supplier activation, with every change written to an audit log naming who made it.
 - Lockout rules that hold whether the request came from the UI or a script: nobody demotes or blocks themselves, the last super admin cannot be removed, and the last active supplier cannot be switched off.
 
+## Testing
+
+`npm test` runs the rules — pricing, cancellation, bucketing, supplier ranking,
+permissions and the lockout cases — with no database and no browser.
+
+`npm run test:e2e` runs eight suites against a real browser, a real server and a
+real database. They are not unit tests and are not meant to be: every bug they
+were written for lives in the seam between those three. See
+[tests/e2e/README.md](tests/e2e/README.md).
+
+| Suite | What it holds to account |
+|---|---|
+| `search` | Results come back, the badged offer really is the cheapest, an invalid query is refused rather than crashing |
+| `auth` | Verification is required, a wrong password and an unknown address are indistinguishable, five failures lock the identifier |
+| `abuse` | The endpoints reachable without an account: reset emails capped per address, sign-up capped per IP, no unsigned webhook, no open cron |
+| `leak` | Nothing the browser receives reveals what we paid the supplier — checked over every response, RSC payloads included |
+| `booking` | Re-pricing consent, passport validation, the summary, the idempotent confirm |
+| `payment` | Payment, settlement, a real PDF ticket, a rejected forged webhook |
+| `dashboard` | Bucketing, the refund quoted before cancelling, another account refused, the reminder that will not send twice |
+| `admin` | Every tier against every page and route, the lockout rules, the audit trail |
+
 ## What is not built yet
 
-The full test suite, security audit and deployment work (stage 8). Unit tests
-cover the pricing, cancellation, bucketing, ranking and permission rules today;
-the integration and end-to-end suites arrive with stage 8.
+Nothing in the brief. The open items are commercial — a supplier account that
+can issue, live payment keys, reviewed policy pages — and are listed in
+[docs/PRE-LAUNCH.md](docs/PRE-LAUNCH.md).
 
 ### Your first administrator
 
@@ -201,6 +223,7 @@ Open <http://localhost:3000>.
 | `npm run start` | Serve the production build |
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests (`node:test` via tsx) |
+| `npm run test:e2e` | End-to-end suites in a real browser |
 | `npm run typecheck` | Type check without emitting |
 | `npm run db:migrate` | Create and apply a migration in development |
 | `npm run db:deploy` | Apply existing migrations — use this everywhere else |

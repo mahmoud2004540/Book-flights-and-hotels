@@ -16,16 +16,20 @@ import { HotelFilterPanel } from "./hotel-filters";
 import { Card, CardBody } from "@/components/ui/card";
 import { OfferSkeletonList } from "@/components/flights/offer-skeleton";
 import { cn } from "@/lib/utils";
+import { useIdle } from "@/lib/use-idle";
+import { useMediaQuery } from "@/lib/use-media-query";
 
 /**
  * MapLibre touches window on import, so it is loaded client-side only.
  * Keeping it out of the server bundle also keeps it off the flights page.
  */
+const MapPlaceholder = () => (
+  <div className="h-[26rem] w-full animate-pulse rounded-card border border-line bg-surface-2 lg:h-[calc(100vh-9rem)]" />
+);
+
 const HotelMap = dynamic(() => import("./hotel-map").then((m) => m.HotelMap), {
   ssr: false,
-  loading: () => (
-    <div className="h-[26rem] w-full animate-pulse rounded-card border border-line bg-surface-2 lg:h-[calc(100vh-9rem)]" />
-  ),
+  loading: MapPlaceholder,
 });
 
 type Query = {
@@ -54,6 +58,14 @@ export function HotelResults({ query }: { query: Query }) {
   const [filters, setFilters] = useState<HotelFilters>(EMPTY_HOTEL_FILTERS);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileView, setMobileView] = useState<"list" | "map">("list");
+  const idle = useIdle();
+  // Matches the lg: breakpoint the layout uses, so this agrees with the CSS
+  // rather than guessing at it.
+  const sideBySide = useMediaQuery("(min-width: 64rem)");
+  // On a phone the map is off-screen behind the list/map switch, so mounting it
+  // there downloads 245KB of map engine nobody asked to see. It waits for the
+  // switch; on a wide screen it sits beside the list and only waits for idle.
+  const showMap = idle && (sideBySide || mobileView === "map");
 
   const run = useCallback(
     async (signal: AbortSignal): Promise<Outcome | null> => {
@@ -228,7 +240,11 @@ export function HotelResults({ query }: { query: Query }) {
             mobileView === "list" && "hidden",
           )}
         >
-          <HotelMap hotels={visible} activeId={activeId} onSelect={setActiveId} />
+          {showMap ? (
+            <HotelMap hotels={visible} activeId={activeId} onSelect={setActiveId} />
+          ) : (
+            <MapPlaceholder />
+          )}
         </div>
       </div>
     </div>

@@ -59,6 +59,15 @@ export const BOOKING_SESSION_MINUTES = 15;
 export const RATE_LIMITS = {
   searchPerUserPerMinute: 30,
   searchPerIpPerMinute: 100,
+  /**
+   * Endpoints that send email. Left unlimited, /forgot-password is a way to
+   * post a thousand times and have a thousand messages land in someone else's
+   * inbox, and /register is a way to mail any address at all — which ends with
+   * the sending domain blocked, not merely with an annoyed stranger.
+   */
+  authPerIpPerMinute: 10,
+  /** Reset emails to one address, counted in the database over an hour. */
+  resetPerAddressPerHour: 3,
 } as const;
 
 /** Supplier call budgets — section 3.3. */

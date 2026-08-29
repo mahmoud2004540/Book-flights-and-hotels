@@ -286,7 +286,7 @@ Ordered as section 16 specifies, with a pause for approval after each stage
 | 5 | Payment and issuance | Stripe with 3DS, verified webhooks, a ticket PDF, a confirmation email | **Done** |
 | 6 | User dashboard | Upcoming, past and cancelled bookings, cancellation and refunds under supplier terms, pre-travel reminders | **Done** |
 | 7 | Admin dashboard | Statistics, booking and user management, markup rules, supplier activation, tiered permissions | **Done** |
-| 8 | Performance, security and deployment | Unit, integration and E2E tests, a security audit, Lighthouse ≥ 90, deployment to Vercel, a pre-launch checklist | Next |
+| 8 | Performance, security and deployment | Unit, integration and E2E tests, a security audit, Lighthouse ≥ 90, deployment to Vercel, a pre-launch checklist | **Done** |
 
 ---
 

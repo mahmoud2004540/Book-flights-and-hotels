@@ -61,7 +61,9 @@ export function OfferCard({
   const carrier = offer.itineraries[0]?.segments[0];
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    // The price is exposed as data so the end-to-end suite can assert on the
+    // ordering without scraping formatted text out of the card.
+    <Card className="transition-shadow hover:shadow-md" data-offer-price={offer.price.amount}>
       <div className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:gap-6">
         <div className="min-w-0">
           <div className="mb-1 flex flex-wrap items-center gap-2">

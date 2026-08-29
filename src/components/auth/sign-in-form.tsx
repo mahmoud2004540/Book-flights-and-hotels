@@ -75,7 +75,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
             required
           />
         </Field>
-        <Link href="/forgot-password" className="self-start text-xs text-accent hover:underline">
+        <Link href="/forgot-password" className="self-start text-xs text-accent underline underline-offset-2">
           {t("forgotPassword")}
         </Link>
       </div>
