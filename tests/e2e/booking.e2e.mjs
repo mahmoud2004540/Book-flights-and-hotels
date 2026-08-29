@@ -69,13 +69,16 @@ step("confirm is disabled until the terms are accepted", await confirm.isDisable
 // A double-click must produce one booking, not two.
 const guest = await newPage(browser);
 const reference = await bookToPayment(guest, { guestEmail: "double@example.com" });
-step("a booking reference was issued", /^RHL-/.test(reference), reference);
+// The shape, not the prefix: the prefix comes from BRAND, and repeating it
+// here would be the duplication that rename was meant to remove.
+const REFERENCE = /^[A-Z]{2,4}-[A-Z0-9]{6}$/;
+step("a booking reference was issued", REFERENCE.test(reference), reference);
 await pay(guest);
 step("paying reaches the confirmation", guest.url().includes("/booking/confirmed/"));
 
 const { page: member } = await signedInUser(browser, "member");
 const own = await bookToPayment(member);
-step("a signed-in traveller books without re-entering an email", /^RHL-/.test(own), own);
+step("a signed-in traveller books without re-entering an email", REFERENCE.test(own), own);
 
 await browser.close();
 process.exit(finish());

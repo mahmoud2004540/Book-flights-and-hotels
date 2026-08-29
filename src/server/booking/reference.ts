@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { BRAND } from "@/lib/config";
 
 /**
  * The booking reference the traveller quotes to support.
@@ -12,5 +13,5 @@ export function bookingReference(): string {
   const bytes = randomBytes(6);
   let out = "";
   for (const byte of bytes) out += ALPHABET[byte % ALPHABET.length];
-  return `RHL-${out}`;
+  return `${BRAND.referencePrefix}-${out}`;
 }

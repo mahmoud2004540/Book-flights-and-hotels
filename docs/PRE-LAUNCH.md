@@ -87,7 +87,5 @@ none of them is a code change.
       legal advice.
 - [ ] **A support address that a person reads.** Cancellation emails and
       failed-issuance alerts point somewhere; that somewhere has to be staffed.
-- [ ] **A decision on the name.** `BRAND` in `src/lib/config.ts` still says
-      "Rehlaty", which was a placeholder from the first day.
 - [ ] **A decision on the markup.** `DEFAULT_MARKUP_PERCENT` is 4.5. It is the
       difference between a business and a hobby, and no one has confirmed it.

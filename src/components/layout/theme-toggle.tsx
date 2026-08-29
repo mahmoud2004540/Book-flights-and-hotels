@@ -4,11 +4,12 @@ import { useSyncExternalStore } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { BRAND } from "@/lib/config";
 import { THEME_STORAGE_KEY } from "./theme-script";
 
 type ThemeChoice = "light" | "dark" | "system";
 
-const CHANGE_EVENT = "rehlaty:theme-change";
+const CHANGE_EVENT = `${BRAND.slug}:theme-change`;
 
 function readStored(): ThemeChoice {
   try {

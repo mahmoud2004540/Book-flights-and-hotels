@@ -29,7 +29,12 @@ export type TicketData = {
 
 const INK = rgb(0.067, 0.094, 0.137);
 const MUTED = rgb(0.33, 0.39, 0.48);
-const BRAND_AMBER = rgb(0.659, 0.365, 0.024);
+/**
+ * The same #8c4d04 as --brand in globals.css. pdf-lib takes 0-1 components, so
+ * it cannot read the CSS token; the hex is written above it so the two can be
+ * checked against each other by eye rather than by arithmetic.
+ */
+const BRAND_AMBER = rgb(0.549, 0.302, 0.016);
 
 /**
  * The standard PDF fonts encode WinAnsi only, and pdf-lib throws on anything

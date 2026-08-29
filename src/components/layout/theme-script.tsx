@@ -1,4 +1,6 @@
-export const THEME_STORAGE_KEY = "rehlaty-theme";
+import { BRAND } from "@/lib/config";
+
+export const THEME_STORAGE_KEY = `${BRAND.slug}-theme`;
 
 /**
  * Applied before first paint so someone who chose dark never sees a flash of

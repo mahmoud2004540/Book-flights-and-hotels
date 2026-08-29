@@ -1,4 +1,5 @@
 import { renderTemplate, type MailTemplate } from "./templates";
+import { BRAND } from "@/lib/config";
 
 /**
  * Email delivery.
@@ -17,7 +18,7 @@ export async function sendMail(
 ): Promise<SendResult> {
   const { subject, html, text } = renderTemplate(template);
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM ?? "Rehlaty <no-reply@example.com>";
+  const from = process.env.EMAIL_FROM ?? `${BRAND.name} <no-reply@${BRAND.domain}>`;
 
   if (!apiKey) {
     if (process.env.NODE_ENV === "production") {
