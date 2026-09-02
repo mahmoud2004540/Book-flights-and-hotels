@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Weissflug — Best flight and hotel prices",
-    "description": "Compare flight and hotel prices from global suppliers, and book it yourself in a few steps."
+    "title": "Weissflug — Flights and hotels, without the surprises",
+    "description": "Compare flights and hotels across suppliers in one search. The price shown includes taxes, and you see the refund before you cancel."
   },
   "nav": {
     "flights": "Flights",
@@ -19,20 +19,20 @@
     "system": "System"
   },
   "home": {
-    "eyebrow": "Searching global suppliers",
-    "title": "The best price for your trip, without checking ten sites",
-    "subtitle": "We compare flight and hotel prices across several global suppliers in a single search, and show the final price including taxes — no surprises at the last step.",
+    "eyebrow": "Compare, book and manage in one place",
+    "title": "No surprises at checkout — or afterwards",
+    "subtitle": "We compare flights and hotels across several suppliers in one search. The price shown includes taxes, we re-confirm it with the supplier before you pay, and if your plans change we tell you what comes back before anything is cancelled.",
     "searchTabs": {
       "flights": "Flights",
       "hotels": "Hotels"
     },
     "trust": {
       "priceTitle": "The final price, from the first screen",
-      "priceBody": "Every price shown includes taxes and fees. Before payment we re-confirm it with the supplier and tell you if it moved.",
-      "suppliersTitle": "Several suppliers, one search",
-      "suppliersBody": "We query every available supplier at once. If one goes down, results still arrive from the rest.",
-      "selfServeTitle": "Book it entirely yourself",
-      "selfServeBody": "Create an account, save traveller details, and manage your bookings — change, cancel and track from your dashboard."
+      "priceBody": "Every price includes taxes and fees — nothing is added at the last step. Before you pay we re-confirm it with the supplier, and if it has moved we say so and wait for your answer.",
+      "refundTitle": "See the refund before you cancel",
+      "refundBody": "Plans change. Your bookings page shows exactly what comes back, and any fee, before anything is cancelled — not after, when it is too late to decide differently.",
+      "bookedTitle": "Booked here, start to finish",
+      "bookedBody": "No hand-off to another site at the last step. We issue the ticket, so cancelling, refunding and asking a question all run through us rather than a stranger's support queue."
     }
   },
   "search": {
@@ -69,7 +69,7 @@
     "stageNotice": "Live search is wired up in the next stage. The interface and design system are in place now."
   },
   "footer": {
-    "tagline": "Flight and hotel search and booking.",
+    "tagline": "Flights and hotels, booked start to finish.",
     "product": "Product",
     "company": "Company",
     "legal": "Legal",

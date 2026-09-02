@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { Coins, ShieldCheck, Users } from "lucide-react";
+import { Coins, RotateCcw, ShieldCheck } from "lucide-react";
 import { SearchPanel } from "@/components/home/search-panel";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,10 +19,12 @@ function HomeContent() {
   const t = useTranslations("home");
   const tStatus = useTranslations("status");
 
+  // Ordered as the promise is made: what you pay, what you get back if plans
+  // change, and who you are dealing with when either goes wrong.
   const trustPoints = [
     { key: "price", Icon: Coins },
-    { key: "suppliers", Icon: ShieldCheck },
-    { key: "selfServe", Icon: Users },
+    { key: "refund", Icon: RotateCcw },
+    { key: "booked", Icon: ShieldCheck },
   ] as const;
 
   return (
