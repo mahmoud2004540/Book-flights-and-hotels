@@ -91,6 +91,18 @@ export type NormalizedFlightOffer = {
   validatingCarrier: string | null;
   expiresAt: string;
   /**
+   * Whether this fare can actually be bought here.
+   *
+   * False for a supplier that only publishes prices — Travelpayouts indexes
+   * what fares have recently sold for and links out to whoever sells them; it
+   * has no seat to hold and nothing to issue. Such an offer is honest as a
+   * price signal and a lie as a booking, so it is marked rather than hidden,
+   * and the booking flow refuses it.
+   */
+  bookable: boolean;
+  /** Where to send someone for an offer we cannot sell. Null when bookable. */
+  bookingUrl: string | null;
+  /**
    * The supplier's own offer object, kept verbatim.
    *
    * Amadeus re-pricing requires the whole offer posted back, not an id, so

@@ -1,7 +1,8 @@
-import { Briefcase, Plane } from "lucide-react";
+import { Briefcase, ExternalLink, Plane } from "lucide-react";
 import type { Itinerary, PublicFlightOffer } from "@/server/suppliers/types";
 import type { FlightSearchInput } from "@/lib/validation/search";
 import { SelectOfferButton } from "./select-offer";
+import { buttonVariants } from "@/components/ui/button";
 import { formatClock, formatDayOffset } from "@/lib/flights";
 import { formatAmount, formatDuration } from "@/lib/format";
 import { Card } from "@/components/ui/card";
@@ -94,14 +95,31 @@ export function OfferCard({
             <p className="text-2xl font-semibold tabular">
               {formatAmount(offer.price.amount, offer.price.currency)}
             </p>
-            <p className="text-xs text-fg-muted">Total, taxes included</p>
+            <p className="text-xs text-fg-muted">
+              {offer.bookable ? "Total, taxes included" : "Seen at this price elsewhere"}
+            </p>
             {offer.seatsRemaining !== null && offer.seatsRemaining <= 4 && (
               <p className="mt-1 text-xs text-warn">
                 Only {offer.seatsRemaining} left at this price
               </p>
             )}
           </div>
-          {search && <SelectOfferButton offerId={offer.offerId} search={search} />}
+          {/* An offer we cannot sell links out to whoever can, rather than
+              offering a button that would fail. Saying so plainly is the whole
+              value of showing it: someone else is cheaper, and you should know. */}
+          {offer.bookable
+            ? search && <SelectOfferButton offerId={offer.offerId} search={search} />
+            : offer.bookingUrl && (
+                <a
+                  href={offer.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className={buttonVariants({ variant: "outline", size: "md" })}
+                >
+                  Book on {offer.validatingCarrier ?? "the seller"}
+                  <ExternalLink aria-hidden="true" />
+                </a>
+              )}
         </div>
       </div>
     </Card>

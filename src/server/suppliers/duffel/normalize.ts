@@ -142,6 +142,8 @@ export function normalizeFlightOffers(
       // Duffel offers expire on their own schedule, usually well inside our
       // cache TTL, so its expiry wins where it gives one.
       expiresAt: offer.expires_at ?? fallbackExpiry,
+      bookable: true,
+      bookingUrl: null,
       supplierPayload: { offerId: offer.id },
     }];
   });

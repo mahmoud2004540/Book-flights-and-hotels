@@ -22,7 +22,8 @@ one request, with self-service sign-up and booking — no human agent in the loo
 - Account pages behind a session guard: bookings, profile and saved travellers.
 - Passport numbers encrypted at rest with AES-256-GCM; only a masked form ever reaches the browser.
 - Flight search across suppliers behind one adapter interface, with retry, a circuit breaker, per-call timeouts and a shared result cache.
-- Two supplier adapters: Amadeus, and Duffel — which reaches airlines Amadeus does not and makes us the merchant of record without an IATA licence. Adding a third is one directory; nothing else changes.
+- Three supplier adapters: Amadeus and Duffel, both bookable here, plus Travelpayouts — a price index that reaches fares neither sells. Adding another is one directory; nothing else changes.
+- A fare nobody can sell here is shown anyway, marked, with a link to whoever can. It is honest as a price signal and refused by the booking flow, which checks server-side rather than trusting the button that was hidden.
 - Results ranked cheapest first across every supplier, with an explicit tie-break: an identical fare from two suppliers goes to the one that issues the ticket through us.
 - A results page with filters, three sort orders, a ±3 day date strip and skeleton loading.
 - Airport autocomplete, debounced 300ms.

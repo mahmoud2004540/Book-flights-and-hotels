@@ -170,6 +170,8 @@ export class MockAdapter implements SupplierAdapter {
         seatsRemaining: 1 + Math.floor(random() * 9),
         validatingCarrier: carrier.code,
         expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
+        bookable: true,
+        bookingUrl: null,
         supplierPayload: { mockOfferIndex: index, key },
       });
     }

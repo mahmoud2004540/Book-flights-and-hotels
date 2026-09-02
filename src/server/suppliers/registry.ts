@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import type { SupplierAdapter } from "./types";
 import { AmadeusAdapter } from "./amadeus/adapter";
 import { DuffelAdapter } from "./duffel/adapter";
+import { TravelpayoutsAdapter } from "./travelpayouts/adapter";
 
 /**
  * Decides which adapters are live for this request.
@@ -65,7 +66,12 @@ export async function flightAdapters(): Promise<SupplierAdapter[]> {
     if (duffel) adapters.push(duffel);
   }
 
-  // Travelpayouts and Booking.com register here as their stages land.
+  if (active.has("travelpayouts")) {
+    const travelpayouts = TravelpayoutsAdapter.create();
+    if (travelpayouts) adapters.push(travelpayouts);
+  }
+
+  // Booking.com registers here when its stage lands.
   return adapters.filter((adapter) => adapter.capabilities.flights);
 }
 

@@ -300,9 +300,12 @@ Ordered as section 16 specifies, with a pause for approval after each stage
    exact tie goes to the supplier that issues the ticket through us, so the
    order is Duffel → Amadeus → Travelpayouts → Booking.com. See
    `src/server/suppliers/ranking.ts`.
-   Amadeus and Duffel have adapters; Travelpayouts and Booking.com do not yet.
-   The Duffel one was written against the documented v2 shapes without a live
-   key, so its schemas are strict on purpose — see the note in its adapter.
+   Amadeus, Duffel and Travelpayouts have adapters; Booking.com does not yet.
+   Duffel and Travelpayouts were written against documented shapes without a
+   live key, so their schemas are strict on purpose — see the notes in each
+   adapter. Travelpayouts is the one supplier whose offers cannot be bought
+   here: they carry `bookable: false` and a link out, and `findOfferForBooking`
+   refuses them.
 3. **Default markup** for `DEFAULT_MARKUP_PERCENT` — 3%–6% is typical.
 4. **Target markets** — determines when Paymob and Tap are added, and the
    default currency.

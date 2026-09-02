@@ -29,6 +29,12 @@ export async function findOfferForBooking(
   const offer = offers.find((candidate) => candidate.offerId === offerId);
   if (!offer) return null;
 
+  // A price-index offer has no seat behind it and nothing to confirm. The
+  // results page already sends people out to the seller instead of offering to
+  // book, so reaching here means the request did not come from that page —
+  // which is exactly when a guard has to hold.
+  if (!offer.bookable) return null;
+
   const priced = await applyMarkup(offer.netPrice.amount, {
     supplierId: offer.supplierId,
     serviceType: ServiceType.FLIGHT,
