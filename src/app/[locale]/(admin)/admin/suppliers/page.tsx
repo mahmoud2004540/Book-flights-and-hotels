@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCapability } from "@/lib/auth/admin-guard";
 import { can } from "@/lib/admin/permissions";
 import { ToggleRow } from "@/components/admin/toggle-row";
+import { SupplierOrder } from "@/components/admin/supplier-order";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -46,7 +47,7 @@ export default async function AdminSuppliersPage({
             </tr>
           </thead>
           <tbody>
-            {suppliers.map((supplier) => (
+            {suppliers.map((supplier, index) => (
               <tr key={supplier.id} className="border-b border-line-soft last:border-0">
                 <td className="px-4 py-2.5">
                   <div className="flex flex-col">
@@ -54,7 +55,18 @@ export default async function AdminSuppliersPage({
                     <span className="font-mono text-xs text-fg-muted">{supplier.id}</span>
                   </div>
                 </td>
-                <td className="px-4 py-2.5 tabular">{supplier.priority}</td>
+                <td className="px-4 py-2.5">
+                  {editable ? (
+                    <SupplierOrder
+                      supplierId={supplier.id}
+                      name={supplier.name}
+                      isFirst={index === 0}
+                      isLast={index === suppliers.length - 1}
+                    />
+                  ) : (
+                    <span className="tabular">{supplier.priority}</span>
+                  )}
+                </td>
                 <td className="px-4 py-2.5 text-end tabular">{supplier._count.bookings}</td>
                 <td className="px-4 py-2.5">
                   {supplier.isActive ? (

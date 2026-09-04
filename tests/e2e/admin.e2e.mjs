@@ -88,6 +88,39 @@ step("finance can block an account",
 step("a blocked account cannot use the admin API",
   (await send(support, "PATCH", `/api/admin/users/${support.id}`, { action: "block", blocked: false })).status === 404);
 
+// --- reordering the suppliers ------------------------------------------------
+const orderNow = async () =>
+  (await db.rows(`SELECT id, priority FROM suppliers ORDER BY priority ASC`)).map((r) => r.id);
+
+const before = await orderNow();
+step("the suppliers have an order to start with", before.length === 4, before.join(" → "));
+
+const moved = await send(boss, "PATCH", `/api/admin/suppliers/${before[1]}`, { move: "up" });
+step("a super admin can move one up", moved.status === 200, `HTTP ${moved.status}`);
+
+const after = await orderNow();
+step("the two swapped places and nothing else moved",
+  after[0] === before[1] && after[1] === before[0] && after[2] === before[2] && after[3] === before[3],
+  `${before.join(",")} → ${after.join(",")}`);
+
+// Priorities carry no unique constraint, so a half-applied swap would leave two
+// suppliers claiming one place. The transaction is what prevents it.
+const priorities = (await db.rows(`SELECT priority FROM suppliers`)).map((r) => r.priority);
+step("no two suppliers share a place", new Set(priorities).size === priorities.length,
+  priorities.join(","));
+
+const first = await send(boss, "PATCH", `/api/admin/suppliers/${after[0]}`, { move: "up" });
+step("the first one cannot move up", first.status === 409, first.body.reason ?? "");
+const last = await send(boss, "PATCH", `/api/admin/suppliers/${after[3]}`, { move: "down" });
+step("the last one cannot move down", last.status === 409, last.body.reason ?? "");
+
+step("support cannot reorder",
+  (await send(support, "PATCH", `/api/admin/suppliers/${after[2]}`, { move: "up" })).status === 404);
+
+// Put it back, so the suite leaves the order it found.
+await send(boss, "PATCH", `/api/admin/suppliers/${after[0]}`, { move: "down" });
+step("the order was restored", (await orderNow()).join(",") === before.join(","));
+
 const badRule = await send(boss, "POST", "/api/admin/markup", {
   supplierId: "", serviceType: "", destination: "", type: "PERCENT", value: 250, priority: 50,
 });
