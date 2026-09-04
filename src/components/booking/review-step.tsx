@@ -145,7 +145,7 @@ export function ReviewStep({
             <Field
               label="Email for your confirmation"
               htmlFor="guest-email"
-              hint="We send your booking reference and ticket here."
+              hint="We send your booking reference and confirmation here."
             >
               <Input
                 id="guest-email"

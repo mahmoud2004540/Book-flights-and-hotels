@@ -29,7 +29,7 @@ const detail = (await page.textContent("main")) ?? "";
 step("the itinerary is shown", /Itinerary/.test(detail));
 step("the traveller is shown", /Test User/.test(detail));
 step("the payment is shown", /Payment/.test(detail) && /succeeded/.test(detail));
-step("the ticket can be downloaded", (await page.locator('a:has-text("Download ticket")').count()) === 1);
+step("the confirmation can be downloaded", (await page.locator('a:has-text("Download confirmation")').count()) === 1);
 
 // The refund must be quoted before anything is cancelled — a figure discovered
 // afterwards is how trust is lost.

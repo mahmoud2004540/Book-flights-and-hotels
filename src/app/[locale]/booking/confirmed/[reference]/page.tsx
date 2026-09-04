@@ -81,17 +81,28 @@ export default async function ConfirmedPage({
             )}
             {confirmed && (
               <a
-                href={`/api/bookings/${booking.reference}/ticket`}
+                href={`/api/bookings/${booking.reference}/confirmation`}
                 className={buttonVariants({ variant: "outline" })}
               >
                 <Download aria-hidden="true" />
-                Download ticket
+                Download confirmation
               </a>
             )}
             <Link href="/dashboard" className={buttonVariants({ variant: "ghost" })}>
               Go to my bookings
             </Link>
           </div>
+
+          {/* Said here rather than discovered at the airport. The airline
+              reference is what a traveller actually needs to check in, and
+              until issuance is wired up there is not one to give them. */}
+          {confirmed && (
+            <p className="text-xs text-fg-muted">
+              This is your booking confirmation and receipt. Your airline
+              reference is issued separately and will be emailed to you — you
+              will need it, not this document, to check in.
+            </p>
+          )}
         </CardBody>
       </Card>
     </div>

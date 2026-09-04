@@ -13,7 +13,14 @@ type StoredItinerary = {
   }>;
 };
 
-/** The ticket PDF for a confirmed booking. */
+/**
+ * The booking confirmation, as a PDF.
+ *
+ * Named a confirmation and not a ticket because that is what it is: a record
+ * of what was booked and paid. A ticket is issued by an airline and carries an
+ * e-ticket number, and nothing here issues one yet — see issue.ts. Calling it
+ * a ticket would promise a document this does not produce.
+ */
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ reference: string }> },

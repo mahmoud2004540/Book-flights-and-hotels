@@ -63,11 +63,11 @@ export default async function BookingDetailPage({
 
         {booking.status === "CONFIRMED" && (
           <a
-            href={`/api/bookings/${booking.reference}/ticket`}
+            href={`/api/bookings/${booking.reference}/confirmation`}
             className={buttonVariants({ variant: "outline" })}
           >
             <Download aria-hidden="true" />
-            Download ticket
+            Download confirmation
           </a>
         )}
       </div>

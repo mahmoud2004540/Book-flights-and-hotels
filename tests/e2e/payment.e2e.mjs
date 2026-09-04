@@ -12,16 +12,18 @@ step("a payment intent is prepared", true, reference);
 await pay(page);
 const body = (await page.textContent("main")) ?? "";
 step("the booking reads as confirmed", /Your booking is confirmed/.test(body));
-step("a ticket download is offered", (await page.locator('a:has-text("Download ticket")').count()) === 1);
+step("a confirmation download is offered", (await page.locator('a:has-text("Download confirmation")').count()) === 1);
+// It must not promise a ticket: nothing here issues one yet.
+step("and it is not called a ticket", !/Download ticket/.test((await page.textContent("main")) ?? ""));
 
-const ticket = await page.request.get(`${BASE}/api/bookings/${reference}/ticket`);
-step("the ticket downloads", ticket.status() === 200, `HTTP ${ticket.status()}`);
+const ticket = await page.request.get(`${BASE}/api/bookings/${reference}/confirmation`);
+step("the confirmation downloads", ticket.status() === 200, `HTTP ${ticket.status()}`);
 step("it is served as a PDF", (ticket.headers()["content-type"] ?? "").includes("application/pdf"));
 const bytes = await ticket.body();
 step("the file really is a PDF", bytes.subarray(0, 5).toString() === "%PDF-", `${bytes.length} bytes`);
 
-const unknown = await page.request.get(`${BASE}/api/bookings/WFL-NOPE99/ticket`);
-step("an unknown reference gets no ticket", unknown.status() === 404);
+const unknown = await page.request.get(`${BASE}/api/bookings/WFL-NOPE99/confirmation`);
+step("an unknown reference gets no confirmation", unknown.status() === 404);
 
 // An unsigned webhook must never move a booking: it is the one endpoint an
 // attacker can reach without an account.

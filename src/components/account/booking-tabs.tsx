@@ -12,7 +12,7 @@ const ORDER: BookingBucket[] = ["upcoming", "past", "cancelled"];
 const EMPTY_COPY: Record<BookingBucket, { title: string; body: string }> = {
   upcoming: {
     title: "No upcoming trips",
-    body: "Once you book a flight it will appear here, with your reference and ticket.",
+    body: "Once you book a flight it will appear here, with your reference and confirmation.",
   },
   past: {
     title: "No past trips yet",
